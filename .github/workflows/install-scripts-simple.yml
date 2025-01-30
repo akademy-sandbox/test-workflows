@@ -1,4 +1,4 @@
-name: Install Scripts -- Simple Flow
+name: Install Master Simple
 
 on:
   workflow_dispatch:
@@ -12,8 +12,13 @@ on:
           - install-tsr-auto-approval-scripts
           - install-atm-onboarding-scripts
       environment:
-        description: 'Target environment (DEV, TEST, QA)'
+        description: 'Target environment'
         required: true
+        type: choice
+        options:
+          - DEV
+          - TEST
+          - QA
   repository_dispatch:
     types: [trigger-install]
     inputs:
@@ -21,13 +26,13 @@ on:
         description: 'Type of installation'
         required: true
       environment:
-        description: 'Target environment (DEV, TEST, QA)'
+        description: 'Target environment'
         required: true
 
 jobs:
   install-post-office-file-cleanup-utility:
-    if: github.event.inputs.install_type == 'install-post-office-file-cleanup-utility'
     runs-on: ubuntu-latest
+    if: github.event.inputs.install_type == 'install-post-office-file-cleanup-utility'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -46,8 +51,8 @@ jobs:
           "$INSTALL_SCRIPT" $CONFIG
 
   install-tsr-auto-approval-scripts:
-    if: github.event.inputs.install_type == 'install-tsr-auto-approval-scripts'
     runs-on: ubuntu-latest
+    if: github.event.inputs.install_type == 'install-tsr-auto-approval-scripts'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -66,8 +71,8 @@ jobs:
           "$INSTALL_SCRIPT" $CONFIG
 
   install-atm-onboarding-scripts:
-    if: github.event.inputs.install_type == 'install-atm-onboarding-scripts'
     runs-on: ubuntu-latest
+    if: github.event.inputs.install_type == 'install-atm-onboarding-scripts'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
