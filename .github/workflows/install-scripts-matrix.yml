@@ -24,7 +24,7 @@ on:
 
 
 jobs:
-  determine-job:
+  determine-installation-type:
     runs-on: ubuntu-latest
     outputs:
       selected_job: ${{ steps.set-job.outputs.selected_job }}
@@ -43,8 +43,8 @@ jobs:
           esac
 
   install-post-office-file-cleanup-utility:
-    needs: determine-job
-    if: needs.determine-job.outputs.selected_job == 'install-post-office-file-cleanup-utility'
+    needs: determine-installation-type
+    if: needs.determine-installation-type.outputs.selected_job == 'install-post-office-file-cleanup-utility'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -64,8 +64,8 @@ jobs:
           "$INSTALL_SCRIPT" $CONFIG
 
   install-tsr-auto-approval-scripts:
-    needs: determine-job
-    if: needs.determine-job.outputs.selected_job == 'install-tsr-auto-approval-scripts'
+    needs: determine-installation-type
+    if: needs.determine-installation-type.outputs.selected_job == 'install-tsr-auto-approval-scripts'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -85,8 +85,8 @@ jobs:
           "$INSTALL_SCRIPT" $CONFIG
 
   install-atm-onboarding-scripts:
-    needs: determine-job
-    if: needs.determine-job.outputs.selected_job == 'install-atm-onboarding-scripts'
+    needs: determine-installation-type
+    if: needs.determine-installation-type.outputs.selected_job == 'install-atm-onboarding-scripts'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
