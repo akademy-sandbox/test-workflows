@@ -1,4 +1,4 @@
-name: Install Scripts Matrix Flow
+name: Install Scripts - Matrix Flow
 
 on:
   workflow_dispatch:
