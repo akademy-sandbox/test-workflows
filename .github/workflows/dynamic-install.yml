@@ -24,7 +24,7 @@ on:
 
 
 jobs:
-  determine-job:
+  determine-job-🎯:
     runs-on: ubuntu-latest
     outputs:
       install_type: ${{ steps.set-job.outputs.install_type }}
