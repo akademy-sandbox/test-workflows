@@ -1,4 +1,4 @@
-name: Install Master Simple
+name: InstallMaster
 
 on:
   workflow_dispatch:
@@ -30,9 +30,28 @@ on:
         required: true
 
 jobs:
-  install-post-office-file-cleanup-utility:
+  determine-job:
     runs-on: ubuntu-latest
-    if: github.event.inputs.install_type == 'install-post-office-file-cleanup-utility'
+    outputs:
+      selected_job: ${{ steps.set-job.outputs.selected_job }}
+    steps:
+      - name: Determine job based on inputs
+        id: set-job
+        run: |
+          INSTALL_TYPE=${{ github.event.inputs.install_type }}
+          case "$INSTALL_TYPE" in
+            install-post-office-file-cleanup-utility)
+              echo "selected_job=install-post-office-file-cleanup-utility" >> $GITHUB_OUTPUT;;
+            install-tsr-auto-approval-scripts)
+              echo "selected_job=install-tsr-auto-approval-scripts" >> $GITHUB_OUTPUT;;
+            install-atm-onboarding-scripts)
+              echo "selected_job=install-atm-onboarding-scripts" >> $GITHUB_OUTPUT;;
+          esac
+
+  install-post-office-file-cleanup-utility:
+    needs: determine-job
+    if: needs.determine-job.outputs.selected_job == 'install-post-office-file-cleanup-utility'
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -51,8 +70,9 @@ jobs:
           "$INSTALL_SCRIPT" $CONFIG
 
   install-tsr-auto-approval-scripts:
+    needs: determine-job
+    if: needs.determine-job.outputs.selected_job == 'install-tsr-auto-approval-scripts'
     runs-on: ubuntu-latest
-    if: github.event.inputs.install_type == 'install-tsr-auto-approval-scripts'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -71,8 +91,9 @@ jobs:
           "$INSTALL_SCRIPT" $CONFIG
 
   install-atm-onboarding-scripts:
+    needs: determine-job
+    if: needs.determine-job.outputs.selected_job == 'install-atm-onboarding-scripts'
     runs-on: ubuntu-latest
-    if: github.event.inputs.install_type == 'install-atm-onboarding-scripts'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
