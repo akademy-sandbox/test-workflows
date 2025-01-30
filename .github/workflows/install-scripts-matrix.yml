@@ -1,4 +1,4 @@
-name: Install Scripts -- Matrix Flow
+name: InstallMaster
 
 on:
   workflow_dispatch:
@@ -12,30 +12,40 @@ on:
           - install-tsr-auto-approval-scripts
           - install-atm-onboarding-scripts
       environment:
-        description: 'Target environment (DEV, TEST, QA)'
+        description: 'Target environment'
         required: true
+        type: choice
+        options:
+          - DEV
+          - TEST
+          - QA
   repository_dispatch:
     types: [trigger-install]
 
+
 jobs:
-  determine-install-type:
+  determine-job:
     runs-on: ubuntu-latest
     outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      selected_job: ${{ steps.set-job.outputs.selected_job }}
     steps:
-      - name: Set installation matrix
-        id: set-matrix
+      - name: Determine job based on inputs
+        id: set-job
         run: |
-          INSTALL_TYPE=${{ github.event.inputs.install_type || github.event.client_payload.install_type }}
-          MATRIX_JSON="{\"include\":[{\"install_type\":\"$INSTALL_TYPE\"}]}"
-          echo "matrix=$MATRIX_JSON" >> $GITHUB_OUTPUT
+          INSTALL_TYPE=${{ github.event.inputs.install_type }}
+          case "$INSTALL_TYPE" in
+            install-post-office-file-cleanup-utility)
+              echo "selected_job=install-post-office-file-cleanup-utility" >> $GITHUB_OUTPUT;;
+            install-tsr-auto-approval-scripts)
+              echo "selected_job=install-tsr-auto-approval-scripts" >> $GITHUB_OUTPUT;;
+            install-atm-onboarding-scripts)
+              echo "selected_job=install-atm-onboarding-scripts" >> $GITHUB_OUTPUT;;
+          esac
 
-  install:
-    needs: determine-install-type
+  install-post-office-file-cleanup-utility:
+    needs: determine-job
+    if: needs.determine-job.outputs.selected_job == 'install-post-office-file-cleanup-utility'
     runs-on: ubuntu-latest
-    strategy:
-      matrix: 
-        install_type: [install-post-office-file-cleanup-utility, install-tsr-auto-approval-scripts, install-atm-onboarding-scripts]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -44,11 +54,53 @@ jobs:
         run: |
           CONFIG_FILE=inventory/config.yaml
           ENVIRONMENT=${{ github.event.inputs.environment }}
-          CONFIG=$(yq eval ".install-scripts.${{ matrix.install_type }}.$ENVIRONMENT" "$CONFIG_FILE")
+          CONFIG=$(yq eval ".install-scripts.install-post-office-file-cleanup-utility.$ENVIRONMENT" "$CONFIG_FILE")
           echo "CONFIG=$CONFIG" >> $GITHUB_ENV
 
       - name: Run installation script
         run: |
-          INSTALL_SCRIPT="install-scripts/${{ matrix.install_type }}/install.sh"
+          INSTALL_SCRIPT="install-scripts/install-post-office-file-cleanup-utility/install.sh"
+          chmod +x "$INSTALL_SCRIPT"
+          "$INSTALL_SCRIPT" $CONFIG
+
+  install-tsr-auto-approval-scripts:
+    needs: determine-job
+    if: needs.determine-job.outputs.selected_job == 'install-tsr-auto-approval-scripts'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Load configuration
+        run: |
+          CONFIG_FILE=inventory/config.yaml
+          ENVIRONMENT=${{ github.event.inputs.environment }}
+          CONFIG=$(yq eval ".install-scripts.install-tsr-auto-approval-scripts.$ENVIRONMENT" "$CONFIG_FILE")
+          echo "CONFIG=$CONFIG" >> $GITHUB_ENV
+
+      - name: Run installation script
+        run: |
+          INSTALL_SCRIPT="install-scripts/install-tsr-auto-approval-scripts/install.sh"
+          chmod +x "$INSTALL_SCRIPT"
+          "$INSTALL_SCRIPT" $CONFIG
+
+  install-atm-onboarding-scripts:
+    needs: determine-job
+    if: needs.determine-job.outputs.selected_job == 'install-atm-onboarding-scripts'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Load configuration
+        run: |
+          CONFIG_FILE=inventory/config.yaml
+          ENVIRONMENT=${{ github.event.inputs.environment }}
+          CONFIG=$(yq eval ".install-scripts.install-atm-onboarding-scripts.$ENVIRONMENT" "$CONFIG_FILE")
+          echo "CONFIG=$CONFIG" >> $GITHUB_ENV
+
+      - name: Run installation script
+        run: |
+          INSTALL_SCRIPT="install-scripts/install-atm-onboarding-scripts/install.sh"
           chmod +x "$INSTALL_SCRIPT"
           "$INSTALL_SCRIPT" $CONFIG
