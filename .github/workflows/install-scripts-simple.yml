@@ -1,0 +1,86 @@
+name: Install Scripts Simple Flow
+
+on:
+  workflow_dispatch:
+    inputs:
+      install_type:
+        description: 'Type of installation'
+        required: true
+        type: choice
+        options:
+          - install-post-office-file-cleanup-utility
+          - install-tsr-auto-approval-scripts
+          - install-atm-onboarding-scripts
+      environment:
+        description: 'Target environment (DEV, TEST, QA)'
+        required: true
+  repository_dispatch:
+    types: [trigger-install]
+    inputs:
+      install_type:
+        description: 'Type of installation'
+        required: true
+      environment:
+        description: 'Target environment (DEV, TEST, QA)'
+        required: true
+
+jobs:
+  install-post-office-file-cleanup-utility:
+    if: github.event.inputs.install_type == 'install-post-office-file-cleanup-utility'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Load configuration
+        run: |
+          CONFIG_FILE=inventory/config.yaml
+          ENVIRONMENT=${{ github.event.inputs.environment }}
+          CONFIG=$(yq eval ".install-scripts.install-post-office-file-cleanup-utility.$ENVIRONMENT" "$CONFIG_FILE")
+          echo "CONFIG=$CONFIG" >> $GITHUB_ENV
+
+      - name: Run installation script
+        run: |
+          INSTALL_SCRIPT="install-scripts/install-post-office-file-cleanup-utility/install.sh"
+          chmod +x "$INSTALL_SCRIPT"
+          "$INSTALL_SCRIPT" $CONFIG
+
+  install-tsr-auto-approval-scripts:
+    if: github.event.inputs.install_type == 'install-tsr-auto-approval-scripts'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Load configuration
+        run: |
+          CONFIG_FILE=inventory/config.yaml
+          ENVIRONMENT=${{ github.event.inputs.environment }}
+          CONFIG=$(yq eval ".install-scripts.install-tsr-auto-approval-scripts.$ENVIRONMENT" "$CONFIG_FILE")
+          echo "CONFIG=$CONFIG" >> $GITHUB_ENV
+
+      - name: Run installation script
+        run: |
+          INSTALL_SCRIPT="install-scripts/install-tsr-auto-approval-scripts/install.sh"
+          chmod +x "$INSTALL_SCRIPT"
+          "$INSTALL_SCRIPT" $CONFIG
+
+  install-atm-onboarding-scripts:
+    if: github.event.inputs.install_type == 'install-atm-onboarding-scripts'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Load configuration
+        run: |
+          CONFIG_FILE=inventory/config.yaml
+          ENVIRONMENT=${{ github.event.inputs.environment }}
+          CONFIG=$(yq eval ".install-scripts.install-atm-onboarding-scripts.$ENVIRONMENT" "$CONFIG_FILE")
+          echo "CONFIG=$CONFIG" >> $GITHUB_ENV
+
+      - name: Run installation script
+        run: |
+          INSTALL_SCRIPT="install-scripts/install-atm-onboarding-scripts/install.sh"
+          chmod +x "$INSTALL_SCRIPT"
+          "$INSTALL_SCRIPT" $CONFIG

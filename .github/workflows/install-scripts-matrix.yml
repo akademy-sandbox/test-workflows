@@ -1,0 +1,54 @@
+name: Install Scripts Matrix Flow
+
+on:
+  workflow_dispatch:
+    inputs:
+      install_type:
+        description: 'Type of installation'
+        required: true
+        type: choice
+        options:
+          - install-post-office-file-cleanup-utility
+          - install-tsr-auto-approval-scripts
+          - install-atm-onboarding-scripts
+      environment:
+        description: 'Target environment (DEV, TEST, QA)'
+        required: true
+  repository_dispatch:
+    types: [trigger-install]
+
+jobs:
+  determine-install-type:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Set installation matrix
+        id: set-matrix
+        run: |
+          INSTALL_TYPE=${{ github.event.inputs.install_type || github.event.client_payload.install_type }}
+          MATRIX_JSON="{\"include\":[{\"install_type\":\"$INSTALL_TYPE\"}]}"
+          echo "matrix=$MATRIX_JSON" >> $GITHUB_OUTPUT
+
+  install:
+    needs: determine-install-type
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: 
+        install_type: [install-post-office-file-cleanup-utility, install-tsr-auto-approval-scripts, install-atm-onboarding-scripts]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Load configuration
+        run: |
+          CONFIG_FILE=inventory/config.yaml
+          ENVIRONMENT=${{ github.event.inputs.environment }}
+          CONFIG=$(yq eval ".install-scripts.${{ matrix.install_type }}.$ENVIRONMENT" "$CONFIG_FILE")
+          echo "CONFIG=$CONFIG" >> $GITHUB_ENV
+
+      - name: Run installation script
+        run: |
+          INSTALL_SCRIPT="install-scripts/${{ matrix.install_type }}/install.sh"
+          chmod +x "$INSTALL_SCRIPT"
+          "$INSTALL_SCRIPT" $CONFIG
