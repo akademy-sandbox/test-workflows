@@ -8,9 +8,9 @@ on:
         required: true
         type: choice
         options:
-          - install-post-office-file-cleanup-utility
-          - install-tsr-auto-approval-scripts
-          - install-atm-onboarding-scripts
+          - post-office-file-cleanup-utility
+          - tsr-auto-approval-scripts
+          - atm-onboarding-scripts
       environment:
         description: 'Target environment'
         required: true
