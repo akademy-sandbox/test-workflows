@@ -34,7 +34,8 @@ jobs:
         run: |
           echo "install_type=${{ github.event.inputs.install_type }}" >> $GITHUB_OUTPUT
 
-  install-${{ needs.determine-job.outputs.install_type }}:
+  install-scripts:
+    name: Install - ${{ needs.determine-job.outputs.install_type }}
     needs: determine-job
     runs-on: ubuntu-latest
     steps:
