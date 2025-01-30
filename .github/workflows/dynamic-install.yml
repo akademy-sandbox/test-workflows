@@ -1,0 +1,56 @@
+name: Dynamic Install
+
+on:
+  workflow_dispatch:
+    inputs:
+      install_type:
+        description: 'Type of installation'
+        required: true
+        type: choice
+        options:
+          - install-post-office-file-cleanup-utility
+          - install-tsr-auto-approval-scripts
+          - install-atm-onboarding-scripts
+      environment:
+        description: 'Target environment'
+        required: true
+        type: choice
+        options:
+          - DEV
+          - TEST
+          - QA
+  repository_dispatch:
+    types: [trigger-install]
+
+
+jobs:
+  determine-job:
+    runs-on: ubuntu-latest
+    outputs:
+      install_type: ${{ steps.set-job.outputs.install_type }}
+    steps:
+      - name: Set installation type output
+        id: set-job
+        run: |
+          echo "install_type=${{ github.event.inputs.install_type }}" >> $GITHUB_OUTPUT
+
+  install-scripts:
+    needs: determine-job
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Load configuration
+        run: |
+          echo "Load Configuration"
+          ENVIRONMENT=${{ github.event.inputs.environment }}
+          INSTALL_TYPE=${{ needs.determine-job.outputs.install_type }}
+          echo $ENVIRONMENT
+          echo $INSTALL_TYPE
+
+      - name: Run installation script
+        run: |
+          echo "Run installation script"
+          echo $ENVIRONMENT
+          echo $INSTALL_TYPE
