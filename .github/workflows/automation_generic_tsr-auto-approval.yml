@@ -1,66 +1,47 @@
-name: Auto Pipeline | Office/ATM Onboarding
+name: Task Flow | TSR Auto-Approval
 
 on:
   workflow_dispatch:
-    inputs:
-      application:
-        description: "Select the application"
-        required: true
-        type: choice
-        options: 'generic'
+  inputs:
+    application:
+      description: "Select the application"
+      required: true
+      type: choice
+      options: ['generic']
 
-      automation_task:
-        description: "Select the automation task"
-        required: true
-        type: choice
-        options: 'tsr-auto-approval'
+    automation_task:
+      description: "Select the automation task"
+      required: true
+      type: choice
+      options: ['tsr-auto-approval']
 
-      action:
-        description: "Select the action"
-        required: true
-        type: choice
-        options: ['run', 'delete']
+    action:
+      description: "Select the action"
+      required: true
+      type: choice
+      options: ['run', 'delete']
 
-      environment:
-        description: "Target environment"
-        required: true
-        type: choice
-        options: ['UAT', 'PROD']
+    environment:
+      description: "Target environment"
+      required: true
+      type: choice
+      options: ['UAT', 'PROD']
 
-      data_centers:
-        description: "Select the data centers (for on-premise environments)"
-        required: false
-        type: choice
-        options: ['ultimo', 'homebush']
+    data_centers:
+      description: "Select the data centers (for on-premise environments)"
+      required: false
+      type: choice
+      options: ['ultimo', 'homebush']
 
-      parameters:
-        description: "Additional parameters in JSON format"
-        required: false
-        default: "{{}}"
+    parameters:
+      description: "Additional parameters in JSON format"
+      required: false
+      default: "{}"
+
+schedule:
+  - cron: ""
+  - cron: ""
+  - cron: "0 6 * * *"
+  - cron: "0 7 * * *"
 
 jobs:
-  execute:
-    runs-on: self-hosted
-
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
-      - name: Read and Validate Input Parameters
-        run: |
-          echo "Application: ${{{{ inputs.application }}}}"
-          echo "Task: ${{{{ inputs.automation_task }}}}"
-          echo "Action: ${{{{ inputs.action }}}}"
-          echo "Environment: ${{{{ inputs.environment }}}}"
-          echo "Data Centers: ${{{{ inputs.data_centers }}}}"
-          echo "Parameters: ${{{{ inputs.parameters }}}}"
-
-      - name: Execute Automation Task
-        run: |
-          python automation_runner.py \\
-            --application "${{{{ inputs.application }}}}" \\
-            --task_type "${{{{ inputs.automation_task }}}}" \\
-            --action "${{{{ inputs.action }}}}" \\
-            --environment "${{{{ inputs.environment }}}}" \\
-            --data_centers "${{{{ inputs.data_centers }}}}" \\
-            --params '${{{{ inputs.parameters }}}}'
