@@ -1,4 +1,4 @@
-name: Automation Pipeline -  [generic/tsr-auto-approval]
+name: Auto Pipeline | Office/ATM Onboarding
 
 on:
   workflow_dispatch:

@@ -1,4 +1,4 @@
-name: Automation Pipeline -  [postilion-office-portal/portal-restart]
+name: Auto Pipeline | Office/ATM Onboarding
 
 on:
   workflow_dispatch:

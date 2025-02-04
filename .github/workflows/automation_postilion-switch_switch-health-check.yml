@@ -1,4 +1,4 @@
-name: Automation Pipeline -  [postilion-switch/switch-health-check]
+name: Switch | Health Check
 
 on:
   workflow_dispatch:

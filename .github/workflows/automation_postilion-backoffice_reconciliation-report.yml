@@ -1,5 +1,4 @@
-name: Automate - Device Driver/ATM Onboarding
-
+name: Auto Pipeline | Office/ATM Onboarding
 
 on:
   workflow_dispatch:
