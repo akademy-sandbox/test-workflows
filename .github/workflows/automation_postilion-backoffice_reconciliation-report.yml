@@ -1,5 +1,4 @@
-name: Auto Pipeline | postilion-device-driver - 
-       atm-onboarding-for-dcc
+name: Pipeline | Device Driver > ATM Onboarding
 
 
 on:
