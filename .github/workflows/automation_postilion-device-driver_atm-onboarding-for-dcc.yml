@@ -1,0 +1,66 @@
+name: Automation - ['postilion-device-driver'] - ['atm-onboarding-for-dcc']
+
+on:
+  workflow_dispatch:
+    inputs:
+      application:
+        description: "Select the application"
+        required: true
+        type: choice
+        options: ['postilion-device-driver']
+
+      automation_task:
+        description: "Select the automation task"
+        required: true
+        type: choice
+        options: ['atm-onboarding-for-dcc']
+
+      action:
+        description: "Select the action"
+        required: true
+        type: choice
+        options: ['install', 'update', 'delete']
+
+      environment:
+        description: "Target environment"
+        required: true
+        type: choice
+        options: ['DEV', 'QA', 'PROD']
+
+      data_centers:
+        description: "Select the data centers (for on-premise environments)"
+        required: false
+        type: choice
+        options: ['ultimo']
+
+      parameters:
+        description: "Additional parameters in JSON format"
+        required: false
+        default: "{{}}"
+
+jobs:
+  execute:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Read and Validate Input Parameters
+        run: |
+          echo "Application: ${{ inputs.application }}"
+          echo "Task: ${{ inputs.automation_task }}"
+          echo "Action: ${{ inputs.action }}"
+          echo "Environment: ${{ inputs.environment }}"
+          echo "Data Centers: ${{ inputs.data_centers }}"
+          echo "Parameters: ${{ inputs.parameters }}"
+
+      - name: Execute Automation Task
+        run: |
+          python automation_runner.py \\
+            --application "${{ inputs.application }}" \\
+            --task_type "${{ inputs.automation_task }}" \\
+            --action "${{ inputs.action }}" \\
+            --environment "${{ inputs.environment }}" \\
+            --data_centers "${{ inputs.data_centers }}" \\
+            --params '${{ inputs.parameters }}'
