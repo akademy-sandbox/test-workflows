@@ -1,4 +1,4 @@
-name: Automation - ['postilion-office'] - ['file-clean-up']
+name: Automation Pipeline -  [postilion-office/file-clean-up]
 
 on:
   workflow_dispatch:
@@ -7,13 +7,13 @@ on:
         description: "Select the application"
         required: true
         type: choice
-        options: ['postilion-office']
+        options: 'postilion-office'
 
       automation_task:
         description: "Select the automation task"
         required: true
         type: choice
-        options: ['file-clean-up']
+        options: 'file-clean-up'
 
       action:
         description: "Select the action"
@@ -48,19 +48,19 @@ jobs:
 
       - name: Read and Validate Input Parameters
         run: |
-          echo "Application: ${{ inputs.application }}"
-          echo "Task: ${{ inputs.automation_task }}"
-          echo "Action: ${{ inputs.action }}"
-          echo "Environment: ${{ inputs.environment }}"
-          echo "Data Centers: ${{ inputs.data_centers }}"
-          echo "Parameters: ${{ inputs.parameters }}"
+          echo "Application: ${{{{ inputs.application }}}}"
+          echo "Task: ${{{{ inputs.automation_task }}}}"
+          echo "Action: ${{{{ inputs.action }}}}"
+          echo "Environment: ${{{{ inputs.environment }}}}"
+          echo "Data Centers: ${{{{ inputs.data_centers }}}}"
+          echo "Parameters: ${{{{ inputs.parameters }}}}"
 
       - name: Execute Automation Task
         run: |
           python automation_runner.py \\
-            --application "${{ inputs.application }}" \\
-            --task_type "${{ inputs.automation_task }}" \\
-            --action "${{ inputs.action }}" \\
-            --environment "${{ inputs.environment }}" \\
-            --data_centers "${{ inputs.data_centers }}" \\
-            --params '${{ inputs.parameters }}'
+            --application "${{{{ inputs.application }}}}" \\
+            --task_type "${{{{ inputs.automation_task }}}}" \\
+            --action "${{{{ inputs.action }}}}" \\
+            --environment "${{{{ inputs.environment }}}}" \\
+            --data_centers "${{{{ inputs.data_centers }}}}" \\
+            --params '${{{{ inputs.parameters }}}}'
