@@ -1,4 +1,4 @@
-name: Automation Pipeline -  [postilion-backoffice/reconciliation-report]
+name: Auto Pipeline | postilion-device-driver/atm-onboarding-for-dcc
 
 on:
   workflow_dispatch:
