@@ -1,4 +1,4 @@
-name: Auto Pipeline | postilion-device-driver/atm-onboarding-for-dcc
+name: postilion-device-driver/atm-onboarding-for-dcc
 
 on:
   workflow_dispatch:
