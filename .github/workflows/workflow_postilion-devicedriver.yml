@@ -61,6 +61,7 @@ on:
     - cron: "0 2 * * *"
     - cron: "0 3 * * *"
     - cron: "0 4 * * *"
+    - cron: ""
 
 jobs:
   execute:
