@@ -1,0 +1,99 @@
+name: Generic Automation Workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      application:
+        description: "Select the application"
+        required: true
+        type: choice
+        options: ['postilion-office', 'postilion-devicedriver']
+        default: postilion-office
+
+      automation_task:
+        description: "Select the automation task"
+        required: true
+        type: choice
+        options: ['file-clean-up', 'atm-onboarding']
+        default: file-clean-up
+
+      action:
+        description: "Select the action"
+        required: true
+        type: choice
+        options: ['install', 'run', 'uninstall', 'install', 'run', 'uninstall']
+        default: install
+
+      environment:
+        description: "Target environment"
+        required: true
+        type: choice
+        options: ['dev', 'test', 'qa', 'preprod', 'prod', 'dev', 'test', 'qa', 'preprod', 'prod']
+        default: dev
+
+      environment_type:
+        description: "Environment Type (onpremise/cloud)"
+        required: true
+        type: choice
+        options: ['onpremise', 'onpremise', 'onpremise', 'cloud', 'cloud', 'onpremise', 'onpremise', 'onpremise', 'cloud', 'cloud']
+        default: onpremise
+
+      target_servers:
+        description: "Select the target servers"
+        required: true
+        type: choice
+        options: ['Server1', 'Server2', 'Server1', 'Server2', 'Server1', 'Server2', 'Server1', 'Server2', 'Server1', 'Server2', 'Server1', 'Server2', 'Server1', 'Server2', 'Server1', 'Server2', 'Server1', 'Server2', 'Server1', 'Server2']
+        default: Server1
+
+      target_db:
+        description: "Select the database"
+        required: true
+        type: choice
+        options: ['db-dev.example.com:5432:office_db', 'db-test.example.com:5432:office_db', 'db-qa.example.com:5432:office_db', 'db-preprod.example.com:5432:office_db', 'db-prod.example.com:5432:office_db', 'db-dev.example.com:5432:office_db', 'db-test.example.com:5432:office_db', 'db-qa.example.com:5432:office_db', 'db-preprod.example.com:5432:office_db', 'db-prod.example.com:5432:office_db']
+        default: db-dev.example.com:5432:office_db
+
+      parameters:
+        description: "Additional parameters in JSON format"
+        required: false
+        default: "{}"
+
+  schedule:
+    - cron: "0 2 * * *"
+    - cron: "0 3 * * *"
+    - cron: "0 4 * * *"
+    - cron: "0 5 * * *"
+    - cron: "0 2 * * *"
+    - cron: "0 3 * * *"
+    - cron: "0 4 * * *"
+    - cron: "0 5 * * *"
+
+jobs:
+  execute:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Read and Validate Input Parameters
+        run: |
+          echo "Application: ${{ inputs.application }}"
+          echo "Task: ${{ inputs.automation_task }}"
+          echo "Action: ${{ inputs.action }}"
+          echo "Environment: ${{ inputs.environment }}"
+          echo "Environment Type: ${{ inputs.environment_type }}"
+          echo "Target Servers: ${{ inputs.target_servers }}"
+          echo "Target DB: ${{ inputs.target_db }}"
+          echo "Parameters: ${{ inputs.parameters }}"
+
+      - name: Execute Automation Task
+        run: |
+          python automation_runner.py \
+            --application "${{ inputs.application }}" \
+            --task_type "${{ inputs.automation_task }}" \
+            --action "${{ inputs.action }}" \
+            --environment "${{ inputs.environment }}" \
+            --environment_type "${{ inputs.environment_type }}" \
+            --target_servers "${{ inputs.target_servers }}" \
+            --target_db "${{ inputs.target_db }}" \
+            --params '${{ inputs.parameters }}'
