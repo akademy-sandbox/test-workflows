@@ -7,8 +7,8 @@ on:
         description: "Select the application"
         required: true
         type: choice
-        options: {APPLICATIONS}
-        default: {DEFAULT_APPLICATION}
+        options: ['postilion-devicedriver']
+        default: postilion-devicedriver
 
       automation_task:
         description: "Select the automation task"
