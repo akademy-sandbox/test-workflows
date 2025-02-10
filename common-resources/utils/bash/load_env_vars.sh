@@ -3,8 +3,21 @@ automation_task="$1"
 environment="$2"
 
 # Function to generate .env file from input_parameters.yml
-load_default_inputs() {
+load_inventory() {
     python3 ${LOAD_INVENTORY_UTIL_PATH} --automation_task_name ${AUTOMATION_TASK} --environment ${ENVIRONMENT} --data_center ${DATA_CENTRE} --environment_type ${ENVIRONMENT_TYPE} --inventory_file_path "${INVENTORY_FILE_PATH}"
+    echo "Input Parameters has been parsed and loaded to .env file successfully."
+    # Check if .env file exists
+    if [ -f ".env" ]; then
+        echo "Environment variables loaded to .env file successfully."
+    else
+        echo "Error: .env file not found. Please debug the execution of load_default_inputs.py."
+        exit 1
+    fi
+}
+
+# Function to generate .env file from input_parameters.yml
+load_global_configs() {
+    python3 ${LOAD_GLOBAL_CONFIGS_UTIL_PATH} --environment ${ENVIRONMENT} --global_config_file_path "${GLOBAL_CONFIGS_PATH}"
     echo "Input Parameters has been parsed and loaded to .env file successfully."
     # Check if .env file exists
     if [ -f ".env" ]; then
@@ -30,7 +43,8 @@ export_env_variables() {
     set +o allexport
 }
 
-load_default_inputs
+load_inventory
+load_global_configs
 load_dot_env_file_cache_key
 export_env_variables
 

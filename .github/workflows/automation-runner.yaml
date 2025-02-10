@@ -47,8 +47,10 @@ jobs:
           ${{ github.workspace }}/common-resources/utils/bash/load_env_vars.sh
         env:
           INVENTORY_FILE_PATH: "${{ github.workspace}}/common-resources/configs/inventory.yml"
+          GLOBAL_CONFIGS_PATH: "${{ github.workspace}}/common-resources/configs/global_configs.yml"
           LOAD_INVENTORY_UTIL_PATH: "${{ github.workspace}}/common-resources/utils/python/load_inventory.py"
-          
+          LOAD_GLOBAL_CONFIGS_UTIL_PATH: "${{ github.workspace}}/common-resources/utils/python/load_global_configs.py"
+        
       - name: Debug Environment Variables
         run: |
           chmod u+x ${{ github.workspace }}/common-resources/utils/bash/debug_dot_env.sh

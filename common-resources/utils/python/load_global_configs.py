@@ -35,9 +35,11 @@ def process_global_params(yaml_data, environment):
     formatted_params = {}
     for key, value in global_params.items():
         if "JUMP_SERVER_NON_PROD_HOST" in key and is_prod:
-            formatted_params["JUMP_SERVER_PROD_HOST"] = value
+            formatted_params["JUMP_SERVER_NON_PROD_HOST"] = value
+            formatted_params["JUMP_SERVER_HOST"] = value
         elif "JUMP_SERVER_PROD_HOST" in key and not is_prod:
-            formatted_params["JUMP_SERVER_NONPROD_HOST"] = value
+            formatted_params["JUMP_SERVER_PROD_HOST"] = value
+            formatted_params["JUMP_SERVER_HOST"] = value
         else:
             formatted_params[key] = value  # Keep other keys as they are
 
@@ -52,6 +54,6 @@ def append_to_env_file(env_filename, global_params):
 
 if __name__ == "__main__":
     args = parse_args()
-    yaml_data = load_yaml(args.config_file_path)
+    yaml_data = load_yaml(args.global_config_file_path)
     global_params = process_global_params(yaml_data, args.environment)
     append_to_env_file(".env", global_params)
