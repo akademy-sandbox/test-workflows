@@ -4,7 +4,7 @@ import yaml
 def parse_args():
     """Parse command-line arguments."""
     parser = argparse.ArgumentParser(description="Append global parameters to .env file.")
-    parser.add_argument("--config_file_path", required=True, help="Path to the YAML config file")
+    parser.add_argument("--global_config_file_path", required=True, help="Path to the YAML config file")
     parser.add_argument("--environment", required=True, help="Environment (e.g., dev, qa, prod)")
     return parser.parse_args()
 
