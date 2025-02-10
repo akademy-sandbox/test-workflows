@@ -267,8 +267,8 @@ jobs:
 
       - name: Debug Environment Variables
         run: |
-          chmod u+x ${{ github.workspace }}/common-resources/utils/bash/debug_env_vars.sh
-          ${{ github.workspace }}/common-resources/utils/bash/debug_env_vars.sh
+          chmod u+x ${{ github.workspace }}/common-resources/utils/bash/debug_dot_env.sh
+          ${{ github.workspace }}/common-resources/utils/bash/debug_dot_env.sh
 
       - name: Install Ansible
         if: false
