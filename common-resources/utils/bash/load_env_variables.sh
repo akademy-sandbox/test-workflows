@@ -4,7 +4,7 @@ environment="$2"
 
 # Function to generate .env file from input_parameters.yml
 load_default_inputs() {
-    
+    python3 ${LOAD_INVENTORY_UTIL_PATH} --automation_task_name ${AUTOMATION_TASK} --environment ${ENVIRONMENT} --data_center ${DATA_CENTRE} --environment_type ${ENVIRONMENT_TYPE} --inventory_file_path "${INVENTORY_FILE_PATH}"
     echo "Input Parameters has been parsed and loaded to .env file successfully."
     # Check if .env file exists
     if [ -f ".env" ]; then
