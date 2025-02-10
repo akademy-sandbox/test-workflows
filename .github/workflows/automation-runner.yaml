@@ -136,3 +136,10 @@ jobs:
           export $(cat .env | xargs)
           sshpass -p "${{ env.SERVICE_USER_PASSWORD }}" ssh -o StrictHostKeyChecking=no \
             "${{ env.SERVICE_USER_NAME }}@$JUMP_SERVER_HOST" "cd $WORKING_DIR && chmod +x $AUTOMATION_TASK/main.sh && $AUTOMATION_TASK/main.sh ${{ env.SERVICE_USER_PASSWORD}}"    
+       
+      - name: Clean up working dir on the Jump Server
+        if : true
+        run: |
+          export $(cat .env | xargs)
+          sshpass -p "${{ env.SERVICE_USER_PASSWORD }}" ssh -o StrictHostKeyChecking=no \
+            "${{ env.SERVICE_USER_NAME }}@$JUMP_SERVER_HOST" "rm -rf $WORKING_DIR/*"
