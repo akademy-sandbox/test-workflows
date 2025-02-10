@@ -1,0 +1,9 @@
+global:
+  jump_server:
+    non_prod:
+      host: "HBDUAS10V.CUSCALAD.COM"
+    prod:
+      host: "HBDUAS10V.CUSCALAD.COM"
+  working_dir: "/app/automation"
+  email_server: "HBDUAS10V.CUSCALAD.COM"
+  to_email: "v-akarthik@cuscal.com.au"

@@ -1,0 +1,33 @@
+---
+  - name: Windows Automation Framework
+    hosts: WIN
+    gather_facts: no
+    become_method: runas
+
+    tasks:
+      - add_host:
+          hostname: "{{ item }}"
+          group: dynamic
+        with_items: "{{ target_servers.split(',') }}" 
+
+  - hosts: dynamic
+    max_fail_percentage: 0
+    serial: "{{ groups['dynamic'] | length }}"
+    become_method: runas
+    any_errors_fatal: true  
+
+    tasks:
+      - name: Run Pre-Task Setup (Common)
+        include_role:
+          name: common
+          tasks_from: pre_task_setup.yml
+
+      - name: Execute Specific Automation Task
+        include_role:
+          name: "{{ automation_role }}"
+          tasks_from: main.yml
+
+      - name: Run Post-Task Cleanup (Common)
+        include_role:
+          name: common
+          tasks_from: post_task_cleanup.yml

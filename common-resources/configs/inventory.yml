@@ -1,0 +1,107 @@
+applications:
+  - name: postilion-office
+    description: "Handles postilion office-related automation tasks"
+    automation_tasks:
+      - name: file-cleanup
+        description: "Removes old files based on retention policy"
+        workflow_name: "Office File Cleanup"
+        actions:
+          - install
+          - run
+          - uninstall
+    environments:
+      - name: dev
+        type: onpremise
+        data_centers:
+          ultimo:
+            target_server: "ULDWAS02V"
+          # No homebush entry in dev
+      - name: test
+        type: onpremise
+        data_centers:
+          ultimo:
+            target_server: "ULTWAS02V"
+      - name: qa
+        type: onpremise
+        data_centers:
+          ultimo:
+            target_server: "TBD"
+          homebush:
+            target_server: "TBD"
+      - name: preprod
+        type: onpremise
+        data_centers:
+          ultimo:
+            target_server: "TBD"
+          homebush:
+            target_server: "TBD"
+      - name: prod
+        type: onpremise
+        data_centers:
+          ultimo:
+            target_server: "TBD"
+          homebush:
+            target_server: "TBD"
+
+  - name: postilion-device-driver
+    description: "Handles device-driver-related automation tasks"
+    automation_tasks:
+      - name: atm-onboarding-for-dcc-config
+        description: "Onboards ATM"
+        workflow_name: "Device Driver - ATM Onboarding"
+        actions:
+          - install
+          - run
+          - uninstall
+    environments:
+      - name: dev
+        type: onpremise
+        data_centers:
+          ultimo:
+            target_server: "ULDWAS15V"
+            database:
+              host: "ULDWDB02V"
+              port: 2433
+              dbname: "REALTIME"
+      - name: test
+        type: onpremise
+        data_centers:
+          ultimo:
+            target_server: "ULTWAS15V"
+            database:
+              host: "ULTWDB02V"
+              port: 2433
+              dbname: "REALTIME"
+      - name: qa
+        type: onpremise
+        data_centers:
+          ultimo:
+            target_server: "TBD"
+            database:
+              host: "TBD"
+              port: 2433
+              dbname: "REALTIME"
+          homebush:
+            target_server: "TBD"
+      - name: preprod
+        type: cloud
+        data_centers:
+          ultimo:
+            target_server: "TBD"
+            database:
+              host: "TBD"
+              port: 2433
+              dbname: "REALTIME"
+          homebush:
+            target_server: "TBD"
+      - name: prod
+        type: cloud
+        data_centers:
+          ultimo:
+            target_server: "TBD"
+            database:
+              host: "TBD"
+              port: 2433
+              dbname: "REALTIME"
+          homebush:
+            target_server: "TBD"

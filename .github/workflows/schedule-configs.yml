@@ -1,0 +1,333 @@
+name: atm-onboarding-for-dcc-config - Automation Workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      application:
+        description: "Select the application"
+        required: true
+        type: choice
+        options: ['postilion-device-driver', 'postilion-office']
+        default: postilion-device-driver
+
+      automation_task:
+        description: "Select the automation task"
+        required: true
+        type: choice
+        options: ['atm-onboarding-for-dcc-config', 'file-cleanup']
+        default: atm-onboarding-for-dcc-config
+
+      action:
+        description: "Select the action"
+        required: true
+        type: choice
+        options: ['install', 'run', 'uninstall']
+        default: install
+      
+      data_centre:
+        description: "Select the data center where the target server is deployed"
+        required: true
+        type: choice
+        options: ['ultimo', 'homebush']
+        default: ultimo        
+
+      environment:
+        description: "Target environment"
+        required: true
+        type: choice
+        options: ['dev', 'test', 'qa', 'preprod', 'prod']
+        default: dev
+
+      environment_type:
+        description: "Environment Type (onpremise/cloud)"
+        required: true
+        type: choice
+        options: ['onpremise', 'onpremise']
+        default: onpremise
+
+  schedule:
+    - cron: "0 20 * * 1"
+    - cron: "0 21 * * 1"
+    - cron: "0 22 * * 1"
+    - cron: "0 23 * * 1"
+    - cron: "0 23 * * 1"
+
+
+
+jobs:
+  orchestrator:
+    name: Dtermine Trigger Event and Input Params
+    runs-on: ubuntu-latest
+    outputs:
+      application: ${{ steps.set-vars.outputs.application }}
+      automation_task: ${{ steps.set-vars.outputs.automation_task }}
+      action: ${{ steps.set-vars.outputs.action }}
+      data_centre: ${{ steps.set-vars.outputs.data_centre }}
+      environment: ${{ steps.set-vars.outputs.environment }}
+      environment_type: ${{ steps.set-vars.outputs.environment_type }}
+
+    strategy:
+      matrix:
+        task:
+          - application: postilion-device-driver
+            automation_task: atm-onboarding-for-dcc-config
+            action: run
+            data_centre: ultimo
+            environment: dev
+            environment_type: onpremise
+            cron: "0 20 * * 1"
+
+          - application: postilion-device-driver
+            automation_task: atm-onboarding-for-dcc-config
+            action: run
+            data_centre: ultimo
+            environment: test
+            environment_type: onpremise
+            cron: "0 21 * * 1"
+
+          - application: postilion-device-driver
+            automation_task: atm-onboarding-for-dcc-config
+            action: run
+            data_centre: ultimo
+            environment: qa
+            environment_type: onpremise
+            cron: "0 22 * * 1"
+
+          - application: postilion-device-driver
+            automation_task: atm-onboarding-for-dcc-config
+            action: run
+            data_centre: ultimo
+            environment: preprod
+            environment_type: onpremise
+            cron: "0 23 * * 1"
+
+          - application: postilion-device-driver
+            automation_task: atm-onboarding-for-dcc-config
+            action: run
+            data_centre: ultimo
+            environment: qa
+            environment_type: onpremise
+            cron: "0 23 * * 1"
+
+    steps:
+      - name: Determine Inputs Based on Trigger Type
+        id: set-vars
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "Using workflow_dispatch inputs"
+            echo "application=${{ github.event.inputs.application }}" >> $GITHUB_OUTPUT
+            echo "automation_task=${{ github.event.inputs.automation_task }}" >> $GITHUB_OUTPUT
+            echo "action=${{ github.event.inputs.action }}" >> $GITHUB_OUTPUT
+            echo "data_centre=${{ github.event.inputs.data_centre }}" >> $GITHUB_OUTPUT
+            echo "environment=${{ github.event.inputs.environment }}" >> $GITHUB_OUTPUT
+            echo "environment_type=${{ github.event.inputs.environment_type }}" >> $GITHUB_OUTPUT
+          fi
+          if [[ "${{ github.event_name }}" == "schedule" ]]; then
+            if [[ "${{ github.event.schedule }}" != "${{ matrix.task.cron }}" ]]; then
+              echo "This job does not match the scheduled cron. Skipping execution."
+              echo "skip=true" >> $GITHUB_ENV
+              exit 0
+            fi
+          
+            echo "Matched cron: ${{ matrix.task.cron }} - Assigning parameters."
+            echo "application=${{ matrix.task.application }}" >> $GITHUB_ENV
+            echo "automation_task=${{ matrix.task.automation_task }}" >> $GITHUB_ENV
+            echo "action=${{ matrix.task.action }}" >> $GITHUB_ENV
+            echo "data_centre=${{ matrix.task.data_centre }}" >> $GITHUB_ENV
+            echo "environment=${{ matrix.task.environment }}" >> $GITHUB_ENV
+            echo "environment_type=${{ matrix.task.environment_type }}" >> $GITHUB_ENV
+          fi  
+
+
+
+  initilize-configurations:
+    name: Initialize Configurations
+    needs: orchestrator
+    runs-on: ubuntu-latest
+    outputs:
+      dot_env_file_cache_key: ${{ steps.set-cache-keys.outputs.dot_env_file_cache_key }}
+      automation_task: ${{ steps.set-output-vars.outputs.automation_task }}
+      action: ${{ steps.set-output-vars.outputs.action }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@main
+
+      - name: Debug GitHub Output varaibles
+        run: |
+          echo "APPLICATION: ${{ needs.orchestrator.outputs.application }}"
+          echo "AUTOMATION_TASK: ${{ needs.orchestrator.outputs.automation_task }}"
+          echo "ACTION: ${{ needs.orchestrator.outputs.action }}"
+          echo "DATA_CENTRE: ${{ needs.orchestrator.outputs.data_centre }}"
+          echo "ENVIRONMENT: ${{ needs.orchestrator.outputs.environment }}"
+          echo "ENVIRONMENT_TYPE: ${{ needs.orchestrator.outputs.environment_type }}"
+
+      - name: Append output variables to .env file
+        run: |
+          echo "APPLICATION=${{ needs.orchestrator.outputs.application }}" >> .env
+          echo "AUTOMATION_TASK=${{ needs.orchestrator.outputs.automation_task }}" >> .env
+          echo "ACTION=${{ needs.orchestrator.outputs.action }}" >> .env
+          echo "DATA_CENTRE=${{ needs.orchestrator.outputs.data_centre }}" >> .env
+          echo "ENVIRONMENT=${{ needs.orchestrator.outputs.environment }}" >> .env
+          echo "ENVIRONMENT_TYPE=${{ needs.orchestrator.outputs.environment_type }}" >> .env
+
+      - name: Load inventory to .env file
+        run: |
+          if [ -f .env ]; then
+            echo ".env file exists"
+            export $(cat .env | xargs)
+            cat .env
+          else
+            echo ".env file does not exist. Please debug previous jobs."
+            exit 1
+          fi
+          echo "Loading inventory..."
+          python3 ${{ github.workspace }}/common-resources/utils/python/load_inventory.py --automation_task_name ${AUTOMATION_TASK} --environment ${ENVIRONMENT} --data_center ${DATA_CENTRE} --environment_type ${ENVIRONMENT_TYPE} --inventory_file_path "${{ github.workspace}}/common-resources/configs/inventory.yml"
+          if [ -f .env ]; then
+            echo ".env file exists"
+            cat .env
+          else
+            echo ".env file does not exist. Please debug previous jobs."
+            exit 1
+          fi  
+
+      - name: Load global configurations to .env file
+        run: |
+          if [ -f .env ]; then
+            echo ".env file exists"
+            export $(cat .env | xargs)
+            cat .env
+          else
+            echo ".env file does not exist. Please debug previous jobs."
+            exit 1
+          fi
+          echo "Loading global configurations..."
+          python3 ${{ github.workspace }}/common-resources/utils/python/load_global_configs.py --environment ${ENVIRONMENT} --config_file_path "${{ github.workspace}}/common-resources/configs/global_configs.yml"
+          if [ -f .env ]; then
+            echo ".env file exists"
+            cat .env
+          else
+            echo ".env file does not exist. Please debug previous jobs."
+            exit 1
+          fi  
+
+      - name: Export environemnt variables and dot env file cache key
+        run: |
+          chmod +x ${{ github.workspace }}/common-resources/utils/bash/export_variables.sh
+          ${{ github.workspace }}/common-resources/utils/bash/export_variables.sh  
+          if [ -f .env ]; then
+            echo ".env file exists"
+            cat .env
+          else
+            echo ".env file does not exist. Please debug previous jobs."
+            exit 1
+          fi     
+
+      - name: Export cache keys to GitHub vars
+        id: set-cache-keys
+        run: |
+         export $(cat .env | xargs)
+         chmod +x ${{ github.workspace }}/common-resources/utils/bash/github_set_env.sh
+         chmod +x ${{ github.workspace }}/common-resources/utils/bash/github_set_output.sh
+         ${{ github.workspace }}/common-resources/utils/bash/github_set_output.sh --DOT_ENV_FILE_CACHE_KEY "$DOT_ENV_FILE_CACHE_KEY"
+         ${{ github.workspace }}/common-resources/utils/bash/github_set_env.sh --dot_env_file_cache_key "$DOT_ENV_FILE_CACHE_KEY"      
+      
+      - name: Cache .env file
+        if: true
+        uses: actions/cache@main
+        with:   
+          path: .env
+          key: ${{ env.DOT_ENV_FILE_CACHE_KEY }}
+
+      - name: Export output variables
+        id: set-output-vars
+        run: |
+          export $(cat .env | xargs)
+          echo "automation_task=${AUTOMATION_TASK}" >> $GITHUB_ENV
+          echo "action=${ACTION}" >> $GITHUB_ENV
+
+  run-automation-task:
+    name: Run Automation Task
+    runs-on: [self-hosted, env-dev] # runs on self hosted.
+    environment: dev
+    needs: initilize-configurations
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@main
+
+      - name: Debug GitHub Output varaibles
+        run: |
+          echo "ENV_CACHE_KEY: ${{ needs.initilize-configurations.outputs.dot_env_file_cache_key }}"
+
+      - name: Retrieve .env File from Cache
+        uses: actions/cache@main
+        with:
+          path: .env
+          key: ${{ needs.initilize-configurations.outputs.dot_env_file_cache_key }}
+
+      - name: Debug Environment Variables
+        run: |
+          if [ -f .env ]; then
+            echo ".env file exists"
+            export $(cat .env | xargs)
+            cat .env
+          else
+            echo ".env file does not exist. Please debug previous jobs."
+            exit 1
+          fi  
+
+      - name: Install Ansible
+        if: false
+        run: |
+          chmod u+x ${{ github.workspace }}/common-resources/utils/bash/github_install_tools.sh
+          ${{ github.workspace }}/common-resources/utils/bash/github_install_tools.sh ansible
+          echo "Ansible installed successfully."
+      
+      - name: Run Ansible playbook to perform autoamtion
+        if: false
+        run: |
+          export $(cat .env | xargs)
+          echo "---------------------------------"
+          cat .env
+          echo "---------------------------------"
+          cd ${{ github.workspace }}
+          if [ "$ENVIRONMENT" != "prod" ]; then
+            service_user="${{ vars.NONPROD_ONPREM_CI_SERVICE_USER_NAME }}"
+            service_user_password="${{ secrets.NONPROD_ONPREM_CI_SERVICE_USER_PASSWORD }}"
+          else
+            service_user="${{ vars.PROD_ONPREM_CI_SERVICE_USER_NAME }}"
+            service_user_password="${{ secrets.PROD_ONPREM_CI_SERVICE_USER_PASSWORD }}"
+          fi
+          ANSIBLE_ROLE="{ACTION}-${AUTOMATION_TASK}"
+          CURRENT_DIR=${{ github.workspace }}
+          
+          ~/.local/bin/ansible-playbook -vvv ./common-resources/ansible/main.yml \
+          -e "@${AUTOMATION_TASK}/configs/ansible_task_parameters.yml" \
+          -i ./common-resources/ansible/hosts \
+          --extra-vars "ansible_user='${service_user}' \
+                        ansible_ssh_pass='${service_user_password}' \
+                        target_servers='${TARGET_HOSTS}.cuscalad.com' \
+                        environment='${ENVIRONMENT}' \
+                        automation_task='${AUTOMATION_TASK}' \
+                        automation_role='${ANSIBLE_ROLE}' \
+                        script_source_path='${CURRENT_DIR}' \
+                        db_host='${DB_HOST}' \
+                        db_name='${DB_NAME}'"
+        
+          echo "Automation task completed successfully"
+        
+      - name: Run Automation Scripts on Target Servers using Jump Server
+        if: true
+        run: |
+          if [ -f .env ]; then
+            echo ".env file exists"
+            export $(cat .env | xargs)
+            cat .env
+          else
+            echo ".env file does not exist. Please debug previous jobs."
+            exit 1
+          fi  
+          
+
+      
+          
+      

@@ -1,0 +1,3 @@
+- name: Clean up working directory
+  win_shell: Remove-Item -Path "{{ ansible_task_parameters.working_dir }}\\*" -Recurse -Force
+  when: ansible_task_parameters.cleanup_working_dir_after_execution | default(true)

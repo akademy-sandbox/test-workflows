@@ -1,0 +1,11 @@
+ansible_task_parameters:
+  working_dir: D:\Temp\ATM_Onboarding_Automation_WorkingDir
+  utility_install_dir: D:\Temp\ATM_Onboarding_Automation_Scripts
+  atm_onboarding_script_file_name: onboard_atm.ps1
+  cleanup_working_dir_after_execution: false
+  archive_previous_scripts: false
+  csv_source_dir: P:\\Software\\Acquiring\\ATM-Onboarding-DCC-Config
+  csv_max_records: 20
+  success_output_filename: atm_configured_successfully.csv
+  atm_not_found_output_filename: atm_terminal_not_found.csv
+  atm_onboarded_already_output_filename: atm_already_onboarded.csv 

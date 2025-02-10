@@ -1,0 +1,25 @@
+- name: Ensure File Cleanup Utility Installation Path Exists
+  win_file: 
+    path: "{{ ansible_task_parameters.utility_install_dir }}"
+    state: directory
+  register: install_result
+
+- name: Declare variable to store current target host name
+  set_fact:
+    TargetServer: "{{ inventory_hostname }}"
+
+- name: Copy scripts to working directory
+  win_copy:
+    src: "{{ script_source_path }}/{{ automation_task}}"
+    dest: "{{ ansible_task_parameters.working_dir }}"
+    remote_src: no  
+
+- name: Archive previous scripts (if enabled)
+  win_shell: Compress-Archive -Path "{{ task_parameters.utility_install_dir }}\\*" -DestinationPath "{{ task_parameters.install_dir }}\\backup.zip" -Force
+  when: "{{ ansible_task_parameters.archive_previous_scripts }}"
+
+- name: Copy scripts to utility installation directory
+  win_copy:
+    src: "{{ script_source_path }}/{{ automation_task }}"
+    dest: "{{ ansible_task_parameters.utility_install_dir }}" 
+    remote_src: no 

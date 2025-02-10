@@ -1,0 +1,91 @@
+name: {WORKFLOW_NAME}
+
+on:
+  workflow_dispatch:
+    inputs:
+      application:
+        description: "Select the application"
+        required: true
+        type: choice
+        options: {APPLICATIONS}
+        default: {DEFAULT_APPLICATION}
+
+      automation_task:
+        description: "Select the automation task"
+        required: true
+        type: choice
+        options: {AUTOMATION_TASKS}
+        default: {DEFAULT_AUTOMATION_TASK}
+
+      action:
+        description: "Select the action"
+        required: true
+        type: choice
+        options: {ACTIONS}
+        default: {DEFAULT_ACTION}
+
+      environment:
+        description: "Target environment"
+        required: true
+        type: choice
+        options: {ENVIRONMENTS}
+        default: {DEFAULT_ENVIRONMENT}
+
+      environment_type:
+        description: "Environment Type (onpremise/cloud)"
+        required: true
+        type: choice
+        options: {ENVIRONMENT_TYPES}
+        default: {DEFAULT_ENVIRONMENT_TYPE}
+
+      target_servers:
+        description: "Select the target servers"
+        required: true
+        type: choice
+        options: {TARGET_SERVERS}
+        default: {DEFAULT_TARGET_SERVER}
+
+      target_db:
+        description: "Select the database"
+        required: true
+        type: choice
+        options: {TARGET_DB}
+        default: {DEFAULT_TARGET_DB}
+
+      parameters:
+        description: "Additional parameters in JSON format"
+        required: false
+        default: "{}"
+
+{SCHEDULE_EVENT}
+
+jobs:
+  execute:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Read and Validate Input Parameters
+        run: |
+          echo "Application: ${{ inputs.application }}"
+          echo "Task: ${{ inputs.automation_task }}"
+          echo "Action: ${{ inputs.action }}"
+          echo "Environment: ${{ inputs.environment }}"
+          echo "Environment Type: ${{ inputs.environment_type }}"
+          echo "Target Servers: ${{ inputs.target_servers }}"
+          echo "Target DB: ${{ inputs.target_db }}"
+          echo "Parameters: ${{ inputs.parameters }}"
+
+      - name: Execute Automation Task
+        run: |
+          python automation_runner.py \
+            --application "${{ inputs.application }}" \
+            --task_type "${{ inputs.automation_task }}" \
+            --action "${{ inputs.action }}" \
+            --environment "${{ inputs.environment }}" \
+            --environment_type "${{ inputs.environment_type }}" \
+            --target_servers "${{ inputs.target_servers }}" \
+            --target_db "${{ inputs.target_db }}" \
+            --params '${{ inputs.parameters }}'

@@ -1,0 +1,11 @@
+- name: Ensure working directory exists
+  win_file:
+    path: "{{ ansible_task_parameters.working_dir }}"
+    state: directory
+
+- name: Ensure working directory is empty
+  win_shell: Remove-Item -Path "{{ ansible_task_parameters.working_dir }}\\*" -Recurse -Force
+  when: ansible_task_parameters.cleanup_working_dir_after_execution | default(true)
+
+
+

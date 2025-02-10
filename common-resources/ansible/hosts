@@ -1,0 +1,11 @@
+[WIN]
+ULDWAS15V.cuscalad.com # default_server (This will be ignored by the playbook)
+
+[all:vars]
+ansible_user=svc-ghe-nonprod@cuscalad.com
+ansible_connection=winrm
+ansible_winrm_port=5985
+ansible_winrm_scheme=http
+ansible_winrm_transport=ntlm
+ansible_winrm_kerberos_delegation=true
+ansible_python_interpreter="C:\\\Program Files (x86)\\Python311\\python.exe"
