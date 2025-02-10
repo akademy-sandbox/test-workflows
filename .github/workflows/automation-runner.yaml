@@ -135,4 +135,4 @@ jobs:
         run: |
           export $(cat .env | xargs)
           sshpass -p "${{ env.SERVICE_USER_PASSWORD }}" ssh -o StrictHostKeyChecking=no \
-            "${{ env.SERVICE_USER_NAME }}@$JUMP_SERVER_HOST" "cd $WORKING_DIR && chmod +x automation_runner.sh && ./automation_runner.sh"    
+            "${{ env.SERVICE_USER_NAME }}@$JUMP_SERVER_HOST" "cd $WORKING_DIR && chmod +x main.sh && ./main.sh ${{ env.SERVICE_USER_PASSWORD}}"    
