@@ -1,4 +1,4 @@
-name: Orchestrator Workflow
+name: Automation Controller
 
 on:
   workflow_dispatch:
@@ -46,7 +46,7 @@ on:
         default: onpremise
 
   schedule:
-    - cron: "*/2 * * * *"
+    - cron: "0 20 * * 1"
     - cron: "0 21 * * 1"
     - cron: "0 22 * * 1"
     - cron: "0 23 * * 1"
@@ -77,7 +77,7 @@ jobs:
               -d "{\"event_type\":\"trigger-automation\",\"client_payload\":{\"application\":\"${{ github.event.inputs.application }}\",\"automation_task\":\"${{ github.event.inputs.automation_task }}\",\"action\":\"${{ github.event.inputs.action }}\",\"data_centre\":\"${{ github.event.inputs.data_centre }}\",\"environment\":\"${{ github.event.inputs.environment }}\",\"environment_type\":\"${{ github.event.inputs.environment_type }}\"}}"
           else
             case "${{ github.event.schedule }}" in
-              "*/5 * * * *")
+              "0 20 * * 1")
                 echo "Matched cron: 0 20 * * 1 - Assigning parameters."
                 echo "application=postilion-device-driver" >> $GITHUB_OUTPUT
                 echo "automation_task=atm-onboarding-for-dcc-config" >> $GITHUB_OUTPUT

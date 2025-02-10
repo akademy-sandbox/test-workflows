@@ -1,4 +1,4 @@
-name: Automation Workflow
+name: Automation Runner
 
 on:
   repository_dispatch:
