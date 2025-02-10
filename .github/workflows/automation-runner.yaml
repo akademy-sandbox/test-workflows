@@ -41,6 +41,7 @@ jobs:
 
       - name: Load inventory to .env file
         run: |
+          export $(cat .env | xargs)
           echo "Loading inventory..."
           chmod +x ${{ github.workspace }}/common-resources/utils/bash/load_env_vars.sh
           ${{ github.workspace }}/common-resources/utils/bash/load_env_vars.sh
