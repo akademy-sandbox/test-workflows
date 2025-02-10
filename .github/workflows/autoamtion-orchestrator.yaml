@@ -56,6 +56,13 @@ jobs:
   orchestrator:
     name: Determine Trigger Event and Input Params
     runs-on: ubuntu-latest
+    outputs:
+      application: ${{ steps.set-vars.outputs.application }}
+      automation_task: ${{ steps.set-vars.outputs.automation_task }}
+      action: ${{ steps.set-vars.outputs.action }}
+      data_centre: ${{ steps.set-vars.outputs.data_centre }}
+      environment: ${{ steps.set-vars.outputs.environment }}
+      environment_type: ${{ steps.set-vars.outputs.environment_type }}
     steps:
       - name: Determine Inputs Based on Trigger Type
         id: set-vars
@@ -70,11 +77,14 @@ jobs:
             echo "environment_type=${{ github.event.inputs.environment_type }}" >> $GITHUB_OUTPUT
 
             echo "Triggering Automation Workflow"
+            # Export inputs to Github output
+            
             curl -X POST \
               -H "Accept: application/vnd.github.v3+json" \
               -H "Authorization: token ${{ secrets.MY_GITHUB_TOKEN }}" \
               https://api.github.com/repos/${{ github.repository }}/dispatches \
               -d "{\"event_type\":\"trigger-automation\",\"client_payload\":{\"application\":\"${{ github.event.inputs.application }}\",\"automation_task\":\"${{ github.event.inputs.automation_task }}\",\"action\":\"${{ github.event.inputs.action }}\",\"data_centre\":\"${{ github.event.inputs.data_centre }}\",\"environment\":\"${{ github.event.inputs.environment }}\",\"environment_type\":\"${{ github.event.inputs.environment_type }}\"}}"
+          
           else
             case "${{ github.event.schedule }}" in
               "0 20 * * 1")

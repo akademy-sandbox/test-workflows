@@ -127,6 +127,8 @@ jobs:
       - name: Copy autoamtion scripts to working dir on the Jump Server
         run: |
           export $(cat .env | xargs)
+          ls -la
+          pwd
           sshpass -p "${{ env.SERVICE_USER_PASSWORD }}" scp -o StrictHostKeyChecking=no \
             -r ${{ github.workspace }}/* "${{ env.SERVICE_USER_NAME }}@$JUMP_SERVER_HOST:$WORKING_DIR/"
           echo "Automation scripts copied to Jump Server"   
