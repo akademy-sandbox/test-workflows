@@ -34,48 +34,24 @@ jobs:
           echo "ENVIRONMENT=${{ github.event.client_payload.environment }}" >> .env
           echo "ENVIRONMENT_TYPE=${{ github.event.client_payload.environment_type }}" >> .env
 
+      - name: Debug Environment Variables
+        run: |
+          chmod u+x ${{ github.workspace }}/common-resources/utils/bash/debug_dot_env.sh
+          ${{ github.workspace }}/common-resources/utils/bash/debug_dot_env.sh
+
       - name: Load inventory to .env file
         run: |
           echo "Loading inventory..."
-          chmod +x ${{ github.workspace }}/common-resources/utils/bash/load_inventory.sh
-          ${{ github.workspace }}/common-resources/utils/bash/load_inventory.sh
+          chmod +x ${{ github.workspace }}/common-resources/utils/bash/load_env_vars.sh
+          ${{ github.workspace }}/common-resources/utils/bash/load_env_vars.sh
         env:
           INVENTORY_FILE_PATH: "${{ github.workspace}}/common-resources/configs/inventory.yml"
           LOAD_INVENTORY_UTIL_PATH: "${{ github.workspace}}/common-resources/utils/python/load_inventory.py"
           
-          
-
-      - name: Load global configurations to .env file
+      - name: Debug Environment Variables
         run: |
-          if [ -f .env ]; then
-            echo ".env file exists"
-            export $(cat .env | xargs)
-            cat .env
-          else
-            echo ".env file does not exist. Please debug previous jobs."
-            exit 1
-          fi
-          echo "Loading global configurations..."
-          python3 ${{ github.workspace }}/common-resources/utils/python/load_global_configs.py --environment ${ENVIRONMENT} --config_file_path "${{ github.workspace}}/common-resources/configs/global_configs.yml"
-          if [ -f .env ]; then
-            echo ".env file exists"
-            cat .env
-          else
-            echo ".env file does not exist. Please debug previous jobs."
-            exit 1
-          fi  
-
-      - name: Export environment variables and dot env file cache key
-        run: |
-          chmod +x ${{ github.workspace }}/common-resources/utils/bash/export_variables.sh
-          ${{ github.workspace }}/common-resources/utils/bash/export_variables.sh  
-          if [ -f .env ]; then
-            echo ".env file exists"
-            cat .env
-          else
-            echo ".env file does not exist. Please debug previous jobs."
-            exit 1
-          fi     
+          chmod u+x ${{ github.workspace }}/common-resources/utils/bash/debug_dot_env.sh
+          ${{ github.workspace }}/common-resources/utils/bash/debug_dot_env.sh
 
       - name: Export cache keys to GitHub vars
         id: set-cache-keys
