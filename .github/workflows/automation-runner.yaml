@@ -36,23 +36,14 @@ jobs:
 
       - name: Load inventory to .env file
         run: |
-          if [ -f .env ]; then
-            echo ".env file exists"
-            export $(cat .env | xargs)
-            cat .env
-          else
-            echo ".env file does not exist. Please debug previous jobs."
-            exit 1
-          fi
           echo "Loading inventory..."
-          python3 ${{ github.workspace }}/common-resources/utils/python/load_inventory.py --automation_task_name ${AUTOMATION_TASK} --environment ${ENVIRONMENT} --data_center ${DATA_CENTRE} --environment_type ${ENVIRONMENT_TYPE} --inventory_file_path "${{ github.workspace}}/common-resources/configs/inventory.yml"
-          if [ -f .env ]; then
-            echo ".env file exists"
-            cat .env
-          else
-            echo ".env file does not exist. Please debug previous jobs."
-            exit 1
-          fi  
+          chmod +x ${{ github.workspace }}/common-resources/utils/bash/load_inventory.sh
+          ${{ github.workspace }}/common-resources/utils/bash/load_inventory.sh
+        env:
+          INVENTORY_FILE_PATH: "${{ github.workspace}}/common-resources/configs/inventory.yml"
+          LOAD_INVENTORY_UTIL_PATH: "${{ github.workspace}}/common-resources/utils/python/load_inventory.py"
+          
+          
 
       - name: Load global configurations to .env file
         run: |
