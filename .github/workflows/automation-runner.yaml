@@ -103,54 +103,36 @@ jobs:
           chmod u+x ${{ github.workspace }}/common-resources/utils/bash/debug_dot_env.sh
           ${{ github.workspace }}/common-resources/utils/bash/debug_dot_env.sh
 
-      - name: Install Ansible
-        if: false
+      - name: Export service user and password to github env varaibles
         run: |
-          chmod u+x ${{ github.workspace }}/common-resources/utils/bash/github_install_tools.sh
-          ${{ github.workspace }}/common-resources/utils/bash/github_install_tools.sh ansible
-          echo "Ansible installed successfully."
-      
-      - name: Run Ansible playbook to perform automation
-        if: false
-        run: |
-          export $(cat .env | xargs)
-          echo "---------------------------------"
-          cat .env
-          echo "---------------------------------"
-          cd ${{ github.workspace }}
-          if [ "$ENVIRONMENT" != "prod" ]; then
-            service_user="${{ vars.NONPROD_ONPREM_CI_SERVICE_USER_NAME }}"
-            service_user_password="${{ secrets.NONPROD_ONPREM_CI_SERVICE_USER_PASSWORD }}"
-          else
-            service_user="${{ vars.PROD_ONPREM_CI_SERVICE_USER_NAME }}"
-            service_user_password="${{ secrets.PROD_ONPREM_CI_SERVICE_USER_PASSWORD }}"
-          fi
-          ANSIBLE_ROLE="{ACTION}-${AUTOMATION_TASK}"
-          CURRENT_DIR=${{ github.workspace }}
-          
-          ~/.local/bin/ansible-playbook -vvv ./common-resources/ansible/main.yml \
-          -e "@${AUTOMATION_TASK}/configs/ansible_task_parameters.yml" \
-          -i ./common-resources/ansible/hosts \
-          --extra-vars "ansible_user='${service_user}' \
-                        ansible_ssh_pass='${service_user_password}' \
-                        target_servers='${TARGET_HOSTS}.cuscalad.com' \
-                        environment='${ENVIRONMENT}' \
-                        automation_task='${AUTOMATION_TASK}' \
-                        automation_role='${ANSIBLE_ROLE}' \
-                        script_source_path='${CURRENT_DIR}' \
-                        db_host='${DB_HOST}' \
-                        db_name='${DB_NAME}'"
-        
-          echo "Automation task completed successfully"
-        
-      - name: Run Automation Scripts on Target Servers using Jump Server
+            export $(cat .env | xargs)
+            if [ "${ENVIRONMENT}" != "PROD" ]; then
+                service_user="v-akarthik"
+                service_user_password="password"
+            else
+                service_user="${{ vars.PROD_ONPREM_CI_SERVICE_USER_NAME }}"
+                service_user_password="${{ secrets.PROD_ONPREM_CI_SERVICE_USER_PASSWORD }}"
+            fi
+            echo "SERVICE_USER_NAME=${service_user}" >> $GITHUB_ENV
+            echo "SERVICE_USER_PASSWORD=${service_user_password}" >> $GITHUB_ENV    
+
+      - name: Setup working dir on the Jump Server 
         if: true
         run: |
-          if [ -f .env ]; then
-            echo ".env file exists"
-            export $(cat .env | xargs)
-            cat .env
-          else
-            echo ".env file does not exist. Please debug previous jobs."
-            exit 1
-          fi  
+          export $(cat .env | xargs)
+          ssshpass -p "${{ env.SERVICE_USER_PASSWORD }}" ssh -o StrictHostKeyChecking=no \
+            "${{ env.SERVICE_USER_NAME }}@$JUMP_SERVER_HOST" "mkdir -p $WORKING_DIR && rm -rf $WORKING_DIR/*"
+          echo "Working directory setup on Jump Server completed"
+          
+      - name: Copy autoamtion scripts to working dir on the Jump Server
+        run: |
+          export $(cat .env | xargs)
+          ssshpass -p "${{ env.SERVICE_USER_PASSWORD }}" scp -o StrictHostKeyChecking=no \
+            -r ${{ github.workspace }} "${{ env.SERVICE_USER_NAME }}@$JUMP_SERVER_HOST:$WORKING_DIR/"
+          echo "Automation scripts copied to Jump Server"   
+
+      - name: Run automation script on the Jump Server
+        run: |
+          export $(cat .env | xargs)
+          ssshpass -p "${{ env.SERVICE_USER_PASSWORD }}" ssh -o StrictHostKeyChecking=no \
+            "${{ env.SERVICE_USER_NAME }}@$JUMP_SERVER_HOST" "cd $WORKING_DIR && chmod +x automation_runner.sh && ./automation_runner.sh"    

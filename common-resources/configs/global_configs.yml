@@ -1,7 +1,7 @@
 global:
   jump_server:
     non_prod:
-      host: "HBDUAS10V.CUSCALAD.COM"
+      host: "15.207.185.53"
     prod:
       host: "PROD.CUSCALAD.COM"
   working_dir: "/app/automation"
