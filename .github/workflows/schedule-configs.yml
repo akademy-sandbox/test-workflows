@@ -1,6 +1,9 @@
 name: atm-onboarding-for-dcc-config - Automation Workflow
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
     inputs:
       application:
