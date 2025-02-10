@@ -1,4 +1,4 @@
-if [ -f .env1 ]; then
+if [ -f .env ]; then
     echo ".env file exists"
     export $(cat .env | xargs)
     cat .env
