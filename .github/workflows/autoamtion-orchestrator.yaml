@@ -56,57 +56,6 @@ jobs:
   orchestrator:
     name: Determine Trigger Event and Input Params
     runs-on: ubuntu-latest
-    outputs:
-      application: ${{ steps.set-vars.outputs.application }}
-      automation_task: ${{ steps.set-vars.outputs.automation_task }}
-      action: ${{ steps.set-vars.outputs.action }}
-      data_centre: ${{ steps.set-vars.outputs.data_centre }}
-      environment: ${{ steps.set-vars.outputs.environment }}
-      environment_type: ${{ steps.set-vars.outputs.environment_type }}
-
-    strategy:
-      matrix:
-        task:
-          - application: postilion-device-driver
-            automation_task: atm-onboarding-for-dcc-config
-            action: run
-            data_centre: ultimo
-            environment: dev
-            environment_type: onpremise
-            cron: "0 20 * * 1"
-
-          - application: postilion-device-driver
-            automation_task: atm-onboarding-for-dcc-config
-            action: run
-            data_centre: ultimo
-            environment: test
-            environment_type: onpremise
-            cron: "0 21 * * 1"
-
-          - application: postilion-device-driver
-            automation_task: atm-onboarding-for-dcc-config
-            action: run
-            data_centre: ultimo
-            environment: qa
-            environment_type: onpremise
-            cron: "0 22 * * 1"
-
-          - application: postilion-device-driver
-            automation_task: atm-onboarding-for-dcc-config
-            action: run
-            data_centre: ultimo
-            environment: preprod
-            environment_type: onpremise
-            cron: "0 23 * * 1"
-
-          - application: postilion-device-driver
-            automation_task: atm-onboarding-for-dcc-config
-            action: run
-            data_centre: ultimo
-            environment: prod
-            environment_type: onpremise
-            cron: "0 23 * * 1"
-
     steps:
       - name: Determine Inputs Based on Trigger Type
         id: set-vars
@@ -126,20 +75,54 @@ jobs:
               -H "Authorization: token ${{ secrets.MY_GITHUB_TOKEN }}" \
               https://api.github.com/repos/${{ github.repository }}/dispatches \
               -d "{\"event_type\":\"trigger-automation\",\"client_payload\":{\"application\":\"${{ github.event.inputs.application }}\",\"automation_task\":\"${{ github.event.inputs.automation_task }}\",\"action\":\"${{ github.event.inputs.action }}\",\"data_centre\":\"${{ github.event.inputs.data_centre }}\",\"environment\":\"${{ github.event.inputs.environment }}\",\"environment_type\":\"${{ github.event.inputs.environment_type }}\"}}"
-          fi
+          else
+            case "${{ github.event.schedule }}" in
+              "0 20 * * 1")
+                echo "Matched cron: 0 20 * * 1 - Assigning parameters."
+                echo "application=postilion-device-driver" >> $GITHUB_OUTPUT
+                echo "automation_task=atm-onboarding-for-dcc-config" >> $GITHUB_OUTPUT
+                echo "action=run" >> $GITHUB_OUTPUT
+                echo "data_centre=ultimo" >> $GITHUB_OUTPUT
+                echo "environment=dev" >> $GITHUB_OUTPUT
+                echo "environment_type=onpremise" >> $GITHUB_OUTPUT
+                ;;
+              "0 21 * * 1")
+                echo "Matched cron: 0 21 * * 1 - Assigning parameters."
+                echo "application=postilion-device-driver" >> $GITHUB_OUTPUT
+                echo "automation_task=atm-onboarding-for-dcc-config" >> $GITHUB_OUTPUT
+                echo "action=run" >> $GITHUB_OUTPUT
+                echo "data_centre=ultimo" >> $GITHUB_OUTPUT
+                echo "environment=test" >> $GITHUB_OUTPUT
+                echo "environment_type=onpremise" >> $GITHUB_OUTPUT
+                ;;
+              "0 22 * * 1")
+                echo "Matched cron: 0 22 * * 1 - Assigning parameters."
+                echo "application=postilion-device-driver" >> $GITHUB_OUTPUT
+                echo "automation_task=atm-onboarding-for-dcc-config" >> $GITHUB_OUTPUT
+                echo "action=run" >> $GITHUB_OUTPUT
+                echo "data_centre=ultimo" >> $GITHUB_OUTPUT
+                echo "environment=qa" >> $GITHUB_OUTPUT
+                echo "environment_type=onpremise" >> $GITHUB_OUTPUT
+                ;;
+              "0 23 * * 1")
+                echo "Matched cron: 0 23 * * 1 - Assigning parameters."
+                echo "application=postilion-device-driver" >> $GITHUB_OUTPUT
+                echo "automation_task=atm-onboarding-for-dcc-config" >> $GITHUB_OUTPUT
+                echo "action=run" >> $GITHUB_OUTPUT
+                echo "data_centre=ultimo" >> $GITHUB_OUTPUT
+                echo "environment=preprod" >> $GITHUB_OUTPUT
+                echo "environment_type=onpremise" >> $GITHUB_OUTPUT
+                ;;
+              *)
+                echo "No matching cron schedule found. Skipping execution."
+                exit 0
+                ;;
+            esac
 
-          if [[ "${{ github.event_name }}" == "schedule" ]]; then
-            if [[ "${{ github.event.schedule }}" != "${{ matrix.task.cron }}" ]]; then
-              echo "This job does not match the scheduled cron. Skipping execution."
-              echo "skip=true" >> $GITHUB_ENV
-              exit 0
-            fi
-          
-            echo "Matched cron: ${{ matrix.task.cron }} - Assigning parameters."
-            echo "application=${{ matrix.task.application }}" >> $GITHUB_ENV
-            echo "automation_task=${{ matrix.task.automation_task }}" >> $GITHUB_ENV
-            echo "action=${{ matrix.task.action }}" >> $GITHUB_ENV
-            echo "data_centre=${{ matrix.task.data_centre }}" >> $GITHUB_ENV
-            echo "environment=${{ matrix.task.environment }}" >> $GITHUB_ENV
-            echo "environment_type=${{ matrix.task.environment_type }}" >> $GITHUB_ENV
+            echo "Triggering Automation Workflow"
+            curl -X POST \
+              -H "Accept: application/vnd.github.v3+json" \
+              -H "Authorization: token ${{ secrets.MY_GITHUB_TOKEN }}" \
+              https://api.github.com/repos/${{ github.repository }}/dispatches \
+              -d "{\"event_type\":\"trigger-automation\",\"client_payload\":{\"application\":\"${{ steps.set-vars.outputs.application }}\",\"automation_task\":\"${{ steps.set-vars.outputs.automation_task }}\",\"action\":\"${{ steps.set-vars.outputs.action }}\",\"data_centre\":\"${{ steps.set-vars.outputs.data_centre }}\",\"environment\":\"${{ steps.set-vars.outputs.environment }}\",\"environment_type\":\"${{ steps.set-vars.outputs.environment_type }}\"}}"
           fi
