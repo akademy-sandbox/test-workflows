@@ -266,14 +266,8 @@ jobs:
 
       - name: Debug Environment Variables
         run: |
-          if [ -f .env ]; then
-            echo ".env file exists"
-            export $(cat .env | xargs)
-            cat .env
-          else
-            echo ".env file does not exist. Please debug previous jobs."
-            exit 1
-          fi  
+          chmod u+x ${{ github.workflow }}/common-resources/utils/bash/debug_env_vars.sh
+          ${{ github.workflow }}/common-resources/utils/bash/debug_env_vars.sh
 
       - name: Install Ansible
         if: false
