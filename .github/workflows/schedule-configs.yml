@@ -247,8 +247,8 @@ jobs:
 
   run-automation-task:
     name: Run Automation Task
-    runs-on: [self-hosted, env-dev] # runs on self hosted.
-    environment: dev
+    runs-on: ubuntu-latest
+    
     needs: initilize-configurations
     steps:
       - name: Checkout repository
