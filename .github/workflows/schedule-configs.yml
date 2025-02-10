@@ -1,9 +1,6 @@
 name: atm-onboarding-for-dcc-config - Automation Workflow
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
     inputs:
       application:
@@ -139,7 +136,8 @@ jobs:
             echo "data_centre=${{ matrix.task.data_centre }}" >> $GITHUB_ENV
             echo "environment=${{ matrix.task.environment }}" >> $GITHUB_ENV
             echo "environment_type=${{ matrix.task.environment_type }}" >> $GITHUB_ENV
-          fi  
+          fi
+            
 
 
 
