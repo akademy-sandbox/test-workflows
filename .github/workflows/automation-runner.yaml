@@ -120,19 +120,19 @@ jobs:
         if: true
         run: |
           export $(cat .env | xargs)
-          ssshpass -p "${{ env.SERVICE_USER_PASSWORD }}" ssh -o StrictHostKeyChecking=no \
+          sshpass -p "${{ env.SERVICE_USER_PASSWORD }}" ssh -o StrictHostKeyChecking=no \
             "${{ env.SERVICE_USER_NAME }}@$JUMP_SERVER_HOST" "mkdir -p $WORKING_DIR && rm -rf $WORKING_DIR/*"
           echo "Working directory setup on Jump Server completed"
           
       - name: Copy autoamtion scripts to working dir on the Jump Server
         run: |
           export $(cat .env | xargs)
-          ssshpass -p "${{ env.SERVICE_USER_PASSWORD }}" scp -o StrictHostKeyChecking=no \
+          sshpass -p "${{ env.SERVICE_USER_PASSWORD }}" scp -o StrictHostKeyChecking=no \
             -r ${{ github.workspace }} "${{ env.SERVICE_USER_NAME }}@$JUMP_SERVER_HOST:$WORKING_DIR/"
           echo "Automation scripts copied to Jump Server"   
 
       - name: Run automation script on the Jump Server
         run: |
           export $(cat .env | xargs)
-          ssshpass -p "${{ env.SERVICE_USER_PASSWORD }}" ssh -o StrictHostKeyChecking=no \
+          sshpass -p "${{ env.SERVICE_USER_PASSWORD }}" ssh -o StrictHostKeyChecking=no \
             "${{ env.SERVICE_USER_NAME }}@$JUMP_SERVER_HOST" "cd $WORKING_DIR && chmod +x automation_runner.sh && ./automation_runner.sh"    
