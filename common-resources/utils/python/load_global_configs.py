@@ -34,10 +34,10 @@ def process_global_params(yaml_data, environment):
     # Rename jump server keys based on environment type
     formatted_params = {}
     for key, value in global_params.items():
-        if "JUMP_SERVER_NON_PROD_HOST" in key and is_prod:
+        if "JUMP_SERVER_NON_PROD_HOST" in key and not is_prod:
             formatted_params["JUMP_SERVER_NON_PROD_HOST"] = value
             formatted_params["JUMP_SERVER_HOST"] = value
-        elif "JUMP_SERVER_PROD_HOST" in key and not is_prod:
+        elif "JUMP_SERVER_PROD_HOST" in key and is_prod:
             formatted_params["JUMP_SERVER_PROD_HOST"] = value
             formatted_params["JUMP_SERVER_HOST"] = value
         else:
