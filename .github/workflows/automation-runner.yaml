@@ -129,7 +129,7 @@ jobs:
           export $(cat .env | xargs)
           sshpass -p "${{ env.SERVICE_USER_PASSWORD }}" scp -o StrictHostKeyChecking=no \
             -r ${{ github.workspace }}/.[!.]* ${{ github.workspace }}/* "${{ env.SERVICE_USER_NAME }}@$JUMP_SERVER_HOST:$WORKING_DIR/"
-          echo "Automation scripts copied to Jump Server"   
+          echo "Automation scripts copied to Jump Server."   
 
       - name: Run automation script on the Jump Server
         run: |
