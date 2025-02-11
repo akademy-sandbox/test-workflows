@@ -4,11 +4,9 @@ applications:
     automation_tasks:
       - name: file-cleanup
         description: "Removes old files based on retention policy"
-        workflow_name: "Office File Cleanup"
-        actions:
-          - install
-          - run
-          - uninstall
+      - name: tsr-auto-approval
+        description: "Removes old files based on retention policy"  
+
     environments:
       - name: dev
         type: onpremise
@@ -48,11 +46,9 @@ applications:
     automation_tasks:
       - name: atm-onboarding-for-dcc-config
         description: "Onboards ATM"
-        workflow_name: "Device Driver - ATM Onboarding"
-        actions:
-          - install
-          - run
-          - uninstall
+      - name: visa-dcc-non-dcc-report-generation
+        description: "Vis Report Generation"  
+       
     environments:
       - name: dev
         type: onpremise
