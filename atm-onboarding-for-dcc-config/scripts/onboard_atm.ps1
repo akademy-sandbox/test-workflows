@@ -303,7 +303,9 @@ function Process-Files {
 }
 
     
-$SourceCSVDir = $SourceCSVDir.Replace("P:\","\\cuscalad.com\dfs\")
+#$SourceCSVDir = $SourceCSVDir.Replace("P:\","\\cuscalad.com\dfs\")
+Write-Log -Level "INFO" -Message "SourceCSVDir: $SourceCSVDir"
+Write-Host "SourceCSVDir: $SourceCSVDir"
 Debug-Input-Params
 Create-Result-File
 Process-Files

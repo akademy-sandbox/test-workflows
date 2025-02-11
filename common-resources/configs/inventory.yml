@@ -54,7 +54,7 @@ applications:
         type: onpremise
         data_centers:
           ultimo:
-            target_server: "ULDWAS15V"
+            target_server: "4.213.117.112"
             database:
               host: "ULDWDB02V"
               port: 2433
