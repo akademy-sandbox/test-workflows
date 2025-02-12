@@ -1,4 +1,4 @@
-name: ATM onboarding for DCC configuration
+name: Final Scheduler
 
 on:
   workflow_dispatch:
