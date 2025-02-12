@@ -12,8 +12,9 @@ on:
           - TEST
           - QA
   schedule:
-  - cron: '*/5 11-13 * * 1-5'  # Runs every 5 minutes between 9 PM - 11:55 PM AEST (Previous day UTC)
-  - cron: '*/5 14-20 * * 1-5'  # Runs every 5 minutes between 12 AM - 6 AM AEST
+  - cron: '*/5 10-12 * * 1-5'  # Runs every 5 minutes between 9 PM - 11:55 PM AEDT (Previous day UTC)
+  - cron: '*/5 13-18 * * 1-5'  # Runs every 5 minutes between 12 AM - 6 AM AEDT (Same day UTC)
+
 
 
 jobs:
@@ -26,10 +27,10 @@ jobs:
         environment:
           - name: QA
             runner: ubuntu-latest
-            cron: '*/5 11-13 * * 1-5' 
+            cron: '*/5 10-12 * * 1-5' # Runs every 5 minutes between 9 PM - 11:55 PM AEST (Previous day UTC)
           - name: QA
             runner: ubuntu-latest
-            cron: '*/5 14-20 * * 1-5'
+            cron: '*/5 13-18 * * 1-5' # Runs every 5 minutes between 12 AM - 6 AM AEST
 
 
     runs-on: ${{ matrix.environment.runner }}    
