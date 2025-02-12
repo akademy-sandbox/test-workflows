@@ -74,6 +74,9 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4.1.7
 
+      - name: Print Current GitHub Time
+        run: date -u     
+
       - name: Copy scripts to Jump server   
         run: | 
           
