@@ -12,8 +12,8 @@ on:
           - TEST
           - QA
   schedule:
-  - cron: '*/5 10-12 * * 1-5'  # Runs every 5 minutes between 9 PM - 11:55 PM AEDT (Previous day UTC)
-  - cron: '*/5 13-18 * * 1-5'  # Runs every 5 minutes between 12 AM - 6 AM AEDT (Same day UTC)
+    - cron: '*/5 10-12 * * 1-5'  # Runs every 5 minutes between 9 PM - 6 AM AEDT (Previous day UTC)
+    - cron: '*/5 13-18 * * 1-5'  # Runs every 5 minutes between 12 AM - 6 AM AEDT (Same day UTC)
 
 
 
@@ -27,7 +27,7 @@ jobs:
         environment:
           - name: QA
             runner: ubuntu-latest
-            cron: '*/5 10-12 * * 1-5' # Runs every 5 minutes between 9 PM - 11:55 PM AEST (Previous day UTC)
+            cron: '*/5 10-12 * * 1-5' # Runs every 5 minutes between 9 PM - 6 AM AEST
           - name: QA
             runner: ubuntu-latest
             cron: '*/5 13-18 * * 1-5' # Runs every 5 minutes between 12 AM - 6 AM AEST
