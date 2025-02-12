@@ -43,7 +43,7 @@ jobs:
             echo "This job does not match the current schedule. Skipping."
             echo "skip=true" >> $GITHUB_ENV
             echo "Matrix Cron: ${{ matrix.environment.cron }}"
-            echo "Event Cron: ${{ matrix.environment.cron }}"
+            echo "Event Cron: ${{ github.event.schedule }}"
             environment="${{ matrix.environment.name }}"
           elif [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             echo "This job does not match the selected environment. Skipping."
