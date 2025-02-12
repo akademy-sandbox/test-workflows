@@ -12,8 +12,8 @@ on:
           - TEST
           - QA
   schedule:
-    - cron: '0/50 * * * *' # Every hour
-    - cron: '0/10 * * * *' # Every 15 mins
+    - cron: '0/55 * * * *' # Every hour
+    - cron: '0/45 * * * *' # Every 15 mins
     - cron: '0/5 * * * *' # Every 30 Mins
 
 jobs:
@@ -26,10 +26,10 @@ jobs:
         environment:
           - name: DEV
             runner: ubuntu-latest
-            cron: '0/50 * * * *' 
+            cron: '0/55 * * * *' 
           - name: TEST
             runner: ubuntu-latest
-            cron: '0/10 * * * *' 
+            cron: '0/45 * * * *' 
           - name: QA
             runner: ubuntu-latest
             cron: '0/5 * * * *' 
