@@ -2,8 +2,8 @@ name: ATM onboarding for DCC configuration
 on:
   schedule:
     - cron: '0 * * * *' # Every hour
-    - cron: '0/5 * * * *' # Every 15 mins
-    - cron: '0/1 * * * *' # Every 30 Mins
+    - cron: '0/10 * * * *' # Every 15 mins
+    - cron: '0/5 * * * *' # Every 30 Mins
 
   
   workflow_dispatch:  # Allows manual triggering of this workflow
@@ -32,10 +32,10 @@ jobs:
             cron: '0 * * * *' 
           - name: TEST
             runner: ubuntu-latest
-            cron: '0/5 * * * *' 
+            cron: '0/10 * * * *' 
           - name: QA
             runner: ubuntu-latest
-            cron: '0/1 * * * *' 
+            cron: '0/5 * * * *' 
 
     runs-on: ${{ matrix.environment.runner }}    
     steps:
