@@ -68,8 +68,7 @@ jobs:
   
   atm-onboarding-for-dcc-config:
     needs: traffic-controller
-    runs-on: [self-hosted, env-dev] # runs on self hosted.
-    environment: dev
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4.1.7
