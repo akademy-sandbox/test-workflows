@@ -40,16 +40,15 @@ jobs:
         id: set-env
         run: |
           if [[ "${{ github.event_name }}" == "schedule" ]]; then 
-            echo "This job does not match the current schedule. Skipping."
-            echo "skip=true" >> $GITHUB_ENV
+            echo "Trigerred by Scheduler. Checking the scheduler cron"
             # if matrix.environment.cron and github.event.schedule are the same, then the job is not skipped
             if [[ "${{ matrix.environment.cron }}" == "${{ github.event.schedule }}" ]]; then
               echo "This job matches the current schedule. Proceeding."
               environment="${{ matrix.environment.name }}"
-              echo "skip=false" 
+              echo "skip=true" >> $GITHUB_ENV
             fi
           elif [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            echo "This job does not match the selected environment. Skipping."
+            echo "Its a workflow trigger. Setting environment to ${{ github.event.inputs.environment }}"
             echo "skip=true" >> $GITHUB_ENV
             environment="${{ github.event.inputs.environment }}"
           else
