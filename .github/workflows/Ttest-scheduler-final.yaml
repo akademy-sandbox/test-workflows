@@ -14,71 +14,12 @@ on:
           - QA
 
   schedule:
-    - cron: '0 * * * *'    # DEV - Runs at the start of every hour
-    - cron: '15 * * * *'   # TEST - Runs at 15 minutes past every hour
-    - cron: '30 * * * *'   # QA - Runs at 30 minutes past every hour
+    - cron: '*/5 10-12 * * 1-5'  # Runs every 5 minutes between 9 PM - 6 AM AEDT (Previous day UTC)
+    - cron: '*/5 13-18 * * 1-5'  # Runs every 5 minutes between 12 AM - 6 AM AEDT (Same day UTC)
+
 
 jobs:
-  traffic-controller:
-    outputs:
-      environment: ${{ steps.set-env.outputs.environment }}
-      skip: ${{ steps.set-env.outputs.skip }}
-    strategy:
-      matrix:
-        environment:
-          - name: DEV
-            runner: ubuntu-latest
-            cron: '0 * * * *'
-          - name: TEST
-            runner: ubuntu-latest
-            cron: '15 * * * *'
-          - name: QA
-            runner: ubuntu-latest
-            cron: '30 * * * *'
-
-    runs-on: ${{ matrix.environment.runner }}
-
-    steps:
-      - name: Determine If This Job Should Run
-        id: set-env
-        run: |
-          CURRENT_MINUTE=$(date +"%M")
-          echo "Current minute: $CURRENT_MINUTE"
-
-          SKIP_JOB="true"
-
-          if [[ "${{ github.event_name }}" == "schedule" ]]; then
-            if [[ "$CURRENT_MINUTE" == "00" ]] && [[ "${{ matrix.environment.name }}" == "DEV" ]]; then
-              SKIP_JOB="false"
-              environment="${{ matrix.environment.name }}"
-            elif [[ "$CURRENT_MINUTE" == "15" ]] && [[ "${{ matrix.environment.name }}" == "TEST" ]]; then
-              SKIP_JOB="false"
-              environment="${{ matrix.environment.name }}"
-            elif [[ "$CURRENT_MINUTE" == "30" ]] && [[ "${{ matrix.environment.name }}" == "QA" ]]; then
-              SKIP_JOB="false"
-              environment="${{ matrix.environment.name }}"
-            fi
-          elif [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            if [[ "${{ github.event.inputs.environment }}" == "${{ matrix.environment.name }}" ]]; then
-              SKIP_JOB="false"
-              environment="${{ github.event.inputs.environment }}"
-            fi
-          fi
-
-          if [[ "$SKIP_JOB" == "true" ]]; then
-            echo "This job does NOT match the scheduled run. Skipping."
-            echo "skip=true" >> $GITHUB_ENV
-          else
-            echo "This job matches the scheduled run. Proceeding."
-            echo "skip=false" >> $GITHUB_ENV
-          fi
-          echo "environment=$environment" >> $GITHUB_OUTPUT
-          echo "skip=$skip" >> $GITHUB_OUTPUT    
-
-
-  
   atm-onboarding-for-dcc-config:
-    needs: traffic-controller
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -87,5 +28,5 @@ jobs:
       - name: Copy scripts to Jump server   
         run: | 
           
-          echo "Environment: ${{ needs.traffic-controller.outputs.environment }}"
+          echo "Environment: ${{ github.event.schedule }}"
           
