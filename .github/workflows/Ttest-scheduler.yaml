@@ -12,9 +12,9 @@ on:
           - TEST
           - QA
   schedule:
-    - cron: '0/55 * * * *' # Every hour
-    - cron: '0/45 * * * *' # Every 15 mins
-    - cron: '0/5 * * * *' # Every 30 Mins
+    - cron: '55 * * * *' # Every hour
+    - cron: '45 * * * *' # Every 15 mins
+    - cron: '*/5 * * * *' # Every 30 Mins
 
 jobs:
   traffic-controller:
@@ -26,13 +26,13 @@ jobs:
         environment:
           - name: DEV
             runner: ubuntu-latest
-            cron: '0/55 * * * *' 
+            cron: '55 * * * *' 
           - name: TEST
             runner: ubuntu-latest
-            cron: '0/45 * * * *' 
+            cron: '45 * * * *' 
           - name: QA
             runner: ubuntu-latest
-            cron: '0/5 * * * *' 
+            cron: '*/5 * * * *' 
 
     runs-on: ${{ matrix.environment.runner }}    
     steps:
