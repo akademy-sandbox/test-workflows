@@ -1,11 +1,5 @@
 name: ATM onboarding for DCC configuration
 on:
-  schedule:
-    - cron: '0 * * * *' # Every hour
-    - cron: '0/10 * * * *' # Every 15 mins
-    - cron: '0/5 * * * *' # Every 30 Mins
-
-  
   workflow_dispatch:  # Allows manual triggering of this workflow
     inputs:
       environment:
@@ -17,7 +11,10 @@ on:
           - DEV
           - TEST
           - QA
-
+  schedule:
+    - cron: '0 * * * *' # Every hour
+    - cron: '0/10 * * * *' # Every 15 mins
+    - cron: '0/5 * * * *' # Every 30 Mins
 
 jobs:
   traffic-controller:
