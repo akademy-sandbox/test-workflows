@@ -2,4 +2,3 @@
   win_shell: Remove-Item -Path "{{ ansible_task_parameters.utility_install_dir }}" -Recurse -Force
   when: install_result.changed
   register: delete_result
-  ignore_errors: yes  

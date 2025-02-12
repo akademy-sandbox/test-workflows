@@ -1,0 +1,81 @@
+name: ATM onboarding for DCC configuration
+on:
+  schedule:
+    - cron: '0 * * * *' # Every hour
+    - cron: '0/5 * * * *' # Every 15 mins
+    - cron: '0/1 * * * *' # Every 30 Mins
+
+  
+  workflow_dispatch:  # Allows manual triggering of this workflow
+    inputs:
+      environment:
+        description: 'Environment Name'
+        required: true
+        default: 'DEV'  # Default task name
+        type: choice
+        options:
+          - DEV
+          - TEST
+          - QA
+
+
+jobs:
+  traffic-controller:
+    outputs:
+      environment: ${{ steps.set-env.outputs.environment }}
+      skip: ${{ steps.set-env.outputs.skip }}
+    strategy:
+      matrix:
+        environment:
+          - name: DEV
+            runner: ubuntu-latest
+            cron: '0 * * * *' 
+          - name: TEST
+            runner: ubuntu-latest
+            cron: '0/5 * * * *' 
+          - name: QA
+            runner: ubuntu-latest
+            cron: '0/1 * * * *' 
+
+    runs-on: ${{ matrix.environment.runner }}    
+    steps:
+      - name: Determine Environment and Skip Non-Matching Jobs
+        id: set-env
+        run: |
+          if [[ "${{ github.event_name }}" == "schedule" && "${{ matrix.environment.cron }}" != "${{ github.event.schedule }}" ]]; then
+            echo "This job does not match the current schedule. Skipping."
+            echo "skip=true" >> $GITHUB_ENV
+            environment="${{ matrix.environment.name }}"
+          elif [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ github.event.inputs.environment }}" != "${{ matrix.environment.name }}" ]]; then
+            echo "This job does not match the selected environment. Skipping."
+            echo "skip=true" >> $GITHUB_ENV
+            environment="${{ github.event.inputs.environment }}"
+          else
+            echo "This job matches the criteria. Proceeding."
+            echo "skip=false" 
+          fi
+
+          if [[ -z "$environment" ]]; then
+            echo "No environment set. Skipping job."
+            echo "skip=true" >> $GITHUB_ENV
+          else
+            echo "Environment is $environment"
+            echo "environment=$environment" >> $GITHUB_ENV
+            echo "skip=false" >> $GITHUB_ENV
+          fi
+          echo "environment=$environment" >> $GITHUB_OUTPUT
+          echo "skip=$skip" >> $GITHUB_OUTPUT    
+  
+  atm-onboarding-for-dcc-config:
+    needs: traffic-controller
+    runs-on: [self-hosted, env-dev] # runs on self hosted.
+    environment: dev
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4.1.7
+
+      - name: Copy scripts to Jump server   
+        run: | 
+          
+          echo "Environment: ${{ needs.traffic-controller.outputs.environment }}"
+          

@@ -16,7 +16,7 @@
 
 - name: Archive previous scripts (if enabled)
   win_shell: Compress-Archive -Path "{{ task_parameters.utility_install_dir }}\\*" -DestinationPath "{{ task_parameters.install_dir }}\\backup.zip" -Force
-  when: {{ ansible_task_parameters.archive_previous_scripts }}
+  when: "{{ ansible_task_parameters.archive_previous_scripts }}"
 
 - name: Copy scripts to utility installation directory
   win_copy:
