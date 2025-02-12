@@ -43,6 +43,8 @@ jobs:
             # if matrix.environment.cron and github.event.schedule are the same, then the job is not skipped
             if [[ "${{ matrix.environment.cron }}" == "${{ github.event.schedule }}" ]]; then
               echo "This job matches the current schedule. Proceeding."
+              echo "Time Trigerred in local Time: $(date)" 
+              echo "Time Trigerred in UTC Time: $(date -u)"
               environment="${{ matrix.environment.name }}"
               echo "skip=true" >> $GITHUB_ENV
             fi
