@@ -14,7 +14,7 @@ on:
   schedule:
     - cron: '55 * * * *' # Every hour
     - cron: '45 * * * *' # Every 15 mins
-    - cron: '*/5 * * * *' # Every 30 Mins
+    - cron: '*/5 * * * *' # Every 5 mins
 
 jobs:
   traffic-controller:
@@ -39,7 +39,7 @@ jobs:
       - name: Determine Environment and Skip Non-Matching Jobs
         id: set-env
         run: |
-          if [[ "${{ github.event_name }}" == "schedule" && "${{ matrix.environment.cron }}" != "${{ github.event.schedule }}" ]]; then
+          if [[ "${{ github.event_name }}" == "schedule" ]]; then 
             echo "This job does not match the current schedule. Skipping."
             echo "skip=true" >> $GITHUB_ENV
             environment="${{ matrix.environment.name }}"
