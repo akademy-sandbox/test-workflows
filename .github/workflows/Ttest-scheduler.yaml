@@ -12,9 +12,8 @@ on:
           - TEST
           - QA
   schedule:
-    - cron: '55 * * * *' # Every hour
-    - cron: '45 * * * *' # Every 15 mins
-    - cron: '*/5 * * * *' # Every 5 mins
+    - cron: '0 19-07 * * 1-5'  # Runs every hour between 6 AM - 6 PM Australia AEDT (UTC+11)
+    - cron: '0 20-08 * * 1-5'  # Runs every hour between 6 AM - 6 PM Australia AEST (UTC+10)
 
 jobs:
   traffic-controller:
@@ -24,15 +23,13 @@ jobs:
     strategy:
       matrix:
         environment:
-          - name: DEV
-            runner: ubuntu-latest
-            cron: '55 * * * *' 
-          - name: TEST
-            runner: ubuntu-latest
-            cron: '45 * * * *' 
           - name: QA
             runner: ubuntu-latest
-            cron: '*/5 * * * *' 
+            cron: '0 19-07 * * 1-5' 
+          - name: QA
+            runner: ubuntu-latest
+            cron: '0 20-08 * * 1-5'
+
 
     runs-on: ${{ matrix.environment.runner }}    
     steps:
